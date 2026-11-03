@@ -1,0 +1,280 @@
+<title>Nifty Options Desk</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a trading-desk sheet. Summary strip, then levels, then the OI profile, then the chain. Phone-first, one column. */
+:root{
+  --bg:#f6f5f2; --panel:#ffffff; --line:#dedbd3; --fg:#1c1b18; --muted:#6b685f; --faint:#a39f93;
+  --ce:#C8552D; --pe:#1F8A70; --ce-soft:#f7e3da; --pe-soft:#d9efe8;
+  --good:#1F8A70; --bad:#C8552D; --warn:#a86b00; --spot:#1c1b18;
+  --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#141413; --panel:#1e1e1c; --line:#33322e; --fg:#ecebe6; --muted:#a6a398; --faint:#6e6b62;
+  --ce:#E06A42; --pe:#2FA383; --ce-soft:#3a2219; --pe-soft:#17302a; --good:#2FA383; --bad:#E06A42; --warn:#d7a04a; --spot:#ecebe6; color-scheme:dark } }
+:root[data-theme="dark"]{
+  --bg:#141413; --panel:#1e1e1c; --line:#33322e; --fg:#ecebe6; --muted:#a6a398; --faint:#6e6b62;
+  --ce:#E06A42; --pe:#2FA383; --ce-soft:#3a2219; --pe-soft:#17302a; --good:#2FA383; --bad:#E06A42; --warn:#d7a04a; --spot:#ecebe6; color-scheme:dark }
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--sans);font-size:15px;line-height:1.45;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:14px 40px}
+.wrap{max-width:860px;margin:0 auto;display:grid;gap:18px} .wrap>*{min-width:0}
+h1{font-size:17px;font-weight:600;margin:0;letter-spacing:.01em}
+h2{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:0 0 10px}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.muted{color:var(--muted)} .small{font-size:12.5px}
+.up{color:var(--good)} .down{color:var(--bad)}
+
+header{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:baseline;justify-content:space-between;border-bottom:1px solid var(--line);padding-bottom:10px}
+.status{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--muted)}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--faint)} .dot.live{background:var(--good)}
+
+.strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(128px,1fr));gap:10px}
+.tile{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:10px 12px;min-width:0}
+.tile .lbl{font-size:11.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted)}
+.tile .val{font-size:22px;font-weight:500;line-height:1.15;margin-top:2px}
+.tile .sub{font-size:12.5px;color:var(--muted);margin-top:2px}
+.bias{display:inline-block;padding:2px 9px;border-radius:999px;font-size:12.5px;font-weight:600;border:1px solid var(--line)}
+.bias.b1{background:var(--pe-soft);color:var(--pe)} .bias.b-1{background:var(--ce-soft);color:var(--ce)}
+
+.desk{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--fg);border-radius:6px;padding:12px 14px;display:grid;gap:10px}
+.deskhead{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:baseline} .deskhead h2{margin:0}
+.stance{margin:0;font-size:17px;font-weight:600;line-height:1.35;text-wrap:balance}
+.desk ul{margin:0;padding-left:18px;display:grid;gap:6px;max-width:68ch} .desk li::marker{color:var(--faint)}
+.plan{margin:0;display:grid;grid-template-columns:max-content 1fr;gap:5px 12px;font-size:14px;border-top:1px solid var(--line);padding-top:10px}
+.plan dt{font-size:11.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);padding-top:2px} .plan dd{margin:0;min-width:0}
+@media (max-width:480px){.plan{grid-template-columns:1fr;gap:2px 0} .plan dd{margin-bottom:6px}}
+.risk{margin:0;color:var(--muted);border-top:1px solid var(--line);padding-top:8px}
+.log td,.log th{text-align:left;white-space:normal} .log{min-width:720px}
+.pill{display:inline-block;padding:1px 8px;border-radius:999px;font-size:11.5px;font-weight:600;border:1px solid var(--line)}
+.pill.right{background:var(--pe-soft);color:var(--pe)} .pill.wrong{background:var(--ce-soft);color:var(--ce)} .pill.open{color:var(--muted)}
+.read{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:12px 14px}
+.read ul{margin:0;padding-left:18px;display:grid;gap:5px}
+.read li::marker{color:var(--faint)}
+
+.levels{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:480px){.levels{grid-template-columns:1fr}}
+.lv{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:10px 12px}
+.lv h2{margin-bottom:6px}
+.lv h2.ce{color:var(--ce)} .lv h2.pe{color:var(--pe)}
+.lv table{width:100%;border-collapse:collapse;font-size:13.5px}
+.lv td{padding:3px 0;border-top:1px solid var(--line)} .lv tr:first-child td{border-top:0}
+.lv td:first-child{font-weight:600} .lv td:nth-child(2),.lv td:nth-child(3){text-align:right;color:var(--muted)}
+
+.tabs{display:flex;gap:6px;flex-wrap:wrap}
+.tab{border:1px solid var(--line);background:var(--panel);color:var(--muted);border-radius:999px;padding:4px 12px;font:inherit;font-size:13px;cursor:pointer}
+.tab[aria-selected="true"]{color:var(--fg);border-color:var(--fg);font-weight:600}
+.tab:focus-visible{outline:2px solid var(--pe);outline-offset:2px}
+
+.chart{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:12px 12px 6px;min-width:0}
+.chart svg{width:100%;height:auto;display:block}
+.legend{display:flex;gap:14px;font-size:12.5px;color:var(--muted);margin-bottom:6px;flex-wrap:wrap}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+.tip{position:fixed;pointer-events:none;background:var(--fg);color:var(--bg);font-size:12px;padding:6px 8px;border-radius:4px;z-index:5;white-space:nowrap}
+
+.chainwrap{overflow-x:auto;background:var(--panel);border:1px solid var(--line);border-radius:6px}
+table.chain{border-collapse:collapse;width:100%;min-width:640px;font-size:12.5px}
+.chain th{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600;padding:8px 6px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+.chain td{padding:5px 6px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+.chain th.k,.chain td.k{text-align:center;font-weight:600;background:var(--bg)}
+.chain tr.atm td.k{outline:2px solid var(--spot);outline-offset:-2px}
+.chain td.b{font-size:11px;text-align:left;color:var(--muted)}
+.chain td.b.w{color:var(--fg)}
+.chain .ceh{color:var(--ce)} .chain .peh{color:var(--pe)}
+.chain td.itm{background:color-mix(in srgb,var(--bg) 60%,transparent)}
+
+.hist{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
+footer{font-size:12px;color:var(--muted);border-top:1px solid var(--line);padding-top:10px;line-height:1.5}
+@media (prefers-reduced-motion:no-preference){.tab{transition:border-color .15s}}
+</style>
+
+<div class="wrap">
+  <header>
+    <div><h1>Nifty Options Desk</h1><div class="status"><span class="dot" id="dot"></span><span id="status"></span></div></div>
+    <div class="small muted">Data: NSE option chain · stamp <span class="num" id="stamp"></span></div>
+  </header>
+
+  <section class="strip" id="strip"></section>
+
+  <section class="desk" id="desk" hidden>
+    <div class="deskhead"><h2>Desk view · <span id="deskFor"></span></h2><span class="small muted">written <span class="num" id="deskWritten"></span></span></div>
+    <p class="stance" id="deskStance"></p>
+    <ul id="deskLines"></ul>
+    <dl class="plan" id="deskPlan"></dl>
+    <p class="risk small" id="deskRisk"></p>
+  </section>
+
+  <section class="read">
+    <h2>Rule-based read <span class="bias" id="bias"></span></h2>
+    <ul id="notes"></ul>
+  </section>
+
+  <div class="tabs" role="tablist" id="tabs"></div>
+
+  <section class="levels" id="levels"></section>
+
+  <section class="chart">
+    <h2>Open interest by strike</h2>
+    <div class="legend"><span><i style="background:var(--pe)"></i>Puts (support)</span><span><i style="background:var(--ce)"></i>Calls (resistance)</span><span>│ spot</span></div>
+    <div id="oiChart"></div>
+  </section>
+
+  <section class="chart">
+    <h2>Change in OI today</h2>
+    <div class="legend"><span><i style="background:var(--pe)"></i>Puts</span><span><i style="background:var(--ce)"></i>Calls</span><span class="muted">faded = OI reduced (unwinding)</span></div>
+    <div id="chgChart"></div>
+  </section>
+
+  <section>
+    <h2>Chain around spot</h2>
+    <div class="chainwrap"><table class="chain" id="chain"></table></div>
+    <div class="small muted" style="margin-top:6px">Writing = OI up, premium down (sellers adding). Buying = OI up, premium up. Bold labels mark the heavier side at that strike.</div>
+  </section>
+
+  <section id="histSec" hidden>
+    <h2>Today so far</h2>
+    <div class="hist" id="hist"></div>
+  </section>
+
+  <section id="logSec" hidden>
+    <h2>Call log <span class="small muted" id="logStat" style="text-transform:none;letter-spacing:0"></span></h2>
+    <div class="chainwrap"><table class="chain log" id="log"></table></div>
+  </section>
+
+  <footer>
+    Refreshes about every 30 minutes during market hours when the tracker is running. Figures are NSE's published open interest, not a forecast; the bias is a rule-based heuristic.
+    SEBI's FY22–FY24 study found 93% of individual F&O traders lost money. Size positions accordingly. Not investment advice.
+  </footer>
+</div>
+<div class="tip" id="tip" hidden></div>
+
+<script>
+/*DATA-START*/
+const DATA = {"fetchedAt":"2026-11-02T12:58:01.700Z","nifty":{"last":23440.8,"chg":1.68,"open":23222.3,"high":23440.8,"low":23207.05,"prevClose":23053.1},"vix":{"last":15.52,"chg":1.4},"fut":{"expiry":"23-Nov-2026","last":23424,"chg":0.09},"market":{"status":"Closed","msg":"Normal Market has Closed","tradeDate":"02-Nov-2026 15:30"},"bias":"Bullish","notes":["PCR 1.66 \u2014 put writers dominant, dips are being sold into","Fresh put writing (8.3L) outpaces call writing (0.8L) near spot","Spot is 191 pts above max pain 23250 \u2014 gravity toward expiry is downward","Option writers' range: 23000 (put wall) to 24000 (call wall); straddle implies \u00b1148 pts by 03-Nov-2026"],"chains":[{"expiry":"03-Nov-2026","ts":"02-Nov-2026 15:40:00","spot":23440.8,"atm":23450,"pcr":1.66,"pcrNear":0.96,"totCE":2240983,"totPE":3721867,"addCE":75927,"addPE":832313,"maxPain":23250,"resistance":[{"k":24000,"oi":191134,"chg":21778,"ltp":1.3},{"k":23500,"oi":175725,"chg":-21287,"ltp":23.1},{"k":23600,"oi":164005,"chg":90781,"ltp":10.5}],"support":[{"k":23000,"oi":225471,"chg":85206,"ltp":7},{"k":22000,"oi":200597,"chg":-9615,"ltp":1.75},{"k":22500,"oi":193066,"chg":9059,"ltp":3.05}],"ceAdds":[{"k":23600,"oi":164005,"chg":90781,"ltp":10.5},{"k":23350,"oi":101505,"chg":52669,"ltp":70},{"k":23650,"oi":65900,"chg":33878,"ltp":7.5}],"peAdds":[{"k":23200,"oi":170227,"chg":157116,"ltp":23.35},{"k":23300,"oi":144577,"chg":138862,"ltp":52.6},{"k":23250,"oi":101636,"chg":99121,"ltp":35.55}],"atmIV":{"ce":7.5,"pe":27.97},"straddle":173.7,"expMove":147.64,"rows":[{"k":23050,"ce":{"oi":12284,"chg":-39496,"iv":0,"ltp":302.65,"b":"Short covering"},"pe":{"oi":75488,"chg":11350,"iv":22.21,"ltp":8.65,"b":"Writing"}},{"k":23100,"ce":{"oi":27708,"chg":-72692,"iv":0,"ltp":256,"b":"Short covering"},"pe":{"oi":119665,"chg":77737,"iv":21.48,"ltp":11.45,"b":"Writing"}},{"k":23150,"ce":{"oi":21594,"chg":-32976,"iv":0,"ltp":208.55,"b":"Short covering"},"pe":{"oi":72850,"chg":64867,"iv":21.02,"ltp":15.9,"b":"Writing"}},{"k":23200,"ce":{"oi":70521,"chg":-44981,"iv":0,"ltp":167.6,"b":"Short covering"},"pe":{"oi":170227,"chg":157116,"iv":21.04,"ltp":23.35,"b":"Writing"}},{"k":23250,"ce":{"oi":55379,"chg":4789,"iv":0,"ltp":128.7,"b":"Buying"},"pe":{"oi":101636,"chg":99121,"iv":21.66,"ltp":35.55,"b":"Writing"}},{"k":23300,"ce":{"oi":130354,"chg":32349,"iv":0,"ltp":96.95,"b":"Buying"},"pe":{"oi":144577,"chg":138862,"iv":22.59,"ltp":52.6,"b":"Writing"}},{"k":23350,"ce":{"oi":101505,"chg":52669,"iv":0,"ltp":70,"b":"Buying"},"pe":{"oi":68662,"chg":67420,"iv":23.87,"ltp":75.25,"b":"Writing"}},{"k":23400,"ce":{"oi":149058,"chg":4025,"iv":3.79,"ltp":49,"b":"Buying"},"pe":{"oi":38894,"chg":35402,"iv":25.79,"ltp":104.95,"b":"Writing"}},{"k":23450,"ce":{"oi":84854,"chg":22976,"iv":7.5,"ltp":34.2,"b":"Buying"},"pe":{"oi":10351,"chg":8394,"iv":27.97,"ltp":139.5,"b":"Writing"}},{"k":23500,"ce":{"oi":175725,"chg":-21287,"iv":9.27,"ltp":23.1,"b":"Short covering"},"pe":{"oi":18196,"chg":9980,"iv":30.58,"ltp":179,"b":"Writing"}},{"k":23550,"ce":{"oi":79161,"chg":24187,"iv":10.53,"ltp":15.25,"b":"Buying"},"pe":{"oi":2281,"chg":2021,"iv":33.02,"ltp":219.95,"b":"Writing"}},{"k":23600,"ce":{"oi":164005,"chg":90781,"iv":11.76,"ltp":10.5,"b":"Buying"},"pe":{"oi":4179,"chg":2855,"iv":36.21,"ltp":266,"b":"Writing"}},{"k":23650,"ce":{"oi":65900,"chg":33878,"iv":12.95,"ltp":7.5,"b":"Buying"},"pe":{"oi":1081,"chg":994,"iv":39.32,"ltp":312.9,"b":"Writing"}},{"k":23700,"ce":{"oi":115050,"chg":30281,"iv":14.1,"ltp":5.5,"b":"Buying"},"pe":{"oi":1278,"chg":663,"iv":42.14,"ltp":359.4,"b":"Writing"}},{"k":23750,"ce":{"oi":50494,"chg":22105,"iv":14.88,"ltp":3.7,"b":"Buying"},"pe":{"oi":293,"chg":221,"iv":45.19,"ltp":407.6,"b":"Writing"}},{"k":23800,"ce":{"oi":115423,"chg":12475,"iv":16.14,"ltp":3,"b":"Buying"},"pe":{"oi":827,"chg":-47,"iv":47.75,"ltp":454.35,"b":"Long unwinding"}}]},{"expiry":"09-Nov-2026","ts":"02-Nov-2026 15:40:00","spot":23440.8,"atm":23450,"pcr":0.96,"pcrNear":0.59,"totCE":806588,"totPE":778232,"addCE":181539,"addPE":168606,"maxPain":23200,"resistance":[{"k":24000,"oi":69240,"chg":37153,"ltp":20.05},{"k":24500,"oi":52697,"chg":32870,"ltp":4.3},{"k":23800,"oi":45189,"chg":22844,"ltp":41.2}],"support":[{"k":23000,"oi":55378,"chg":26570,"ltp":69.1},{"k":22000,"oi":44077,"chg":5185,"ltp":8.9},{"k":22500,"oi":41306,"chg":8819,"ltp":20.5}],"ceAdds":[{"k":24000,"oi":69240,"chg":37153,"ltp":20.05},{"k":23800,"oi":45189,"chg":22844,"ltp":41.2},{"k":24100,"oi":25220,"chg":20220,"ltp":13.75}],"peAdds":[{"k":23000,"oi":55378,"chg":26570,"ltp":69.1},{"k":23300,"oi":26241,"chg":24285,"ltp":158.3},{"k":23200,"oi":30770,"chg":24165,"ltp":121.95}],"atmIV":{"ce":10.62,"pe":18.59},"straddle":378.4,"expMove":321.64,"rows":[{"k":23050,"ce":{"oi":2506,"chg":-1133,"iv":0,"ltp":394,"b":"Short covering"},"pe":{"oi":4687,"chg":1394,"iv":18,"ltp":79.5,"b":"Writing"}},{"k":23100,"ce":{"oi":11636,"chg":-2088,"iv":0,"ltp":358,"b":"Short covering"},"pe":{"oi":17016,"chg":7420,"iv":18.04,"ltp":92.5,"b":"Writing"}},{"k":23150,"ce":{"oi":5978,"chg":74,"iv":4.68,"ltp":320,"b":"Buying"},"pe":{"oi":5931,"chg":4306,"iv":17.9,"ltp":105.05,"b":"Writing"}},{"k":23200,"ce":{"oi":22386,"chg":6417,"iv":7.84,"ltp":287.75,"b":"Buying"},"pe":{"oi":30770,"chg":24165,"iv":18.03,"ltp":121.95,"b":"Writing"}},{"k":23250,"ce":{"oi":4218,"chg":1921,"iv":8.78,"ltp":255,"b":"Buying"},"pe":{"oi":7158,"chg":5968,"iv":18,"ltp":138.75,"b":"Writing"}},{"k":23300,"ce":{"oi":31776,"chg":13818,"iv":9.31,"ltp":223.25,"b":"Buying"},"pe":{"oi":26241,"chg":24285,"iv":18.07,"ltp":158.3,"b":"Writing"}},{"k":23350,"ce":{"oi":11255,"chg":6507,"iv":9.75,"ltp":194.45,"b":"Buying"},"pe":{"oi":10547,"chg":10342,"iv":18.26,"ltp":180.95,"b":"Writing"}},{"k":23400,"ce":{"oi":20908,"chg":11573,"iv":10.2,"ltp":169.5,"b":"Buying"},"pe":{"oi":12292,"chg":11806,"iv":18.33,"ltp":204,"b":"Writing"}},{"k":23450,"ce":{"oi":6253,"chg":3349,"iv":10.62,"ltp":147.4,"b":"Buying"},"pe":{"oi":1916,"chg":1802,"iv":18.59,"ltp":231,"b":"Writing"}},{"k":23500,"ce":{"oi":35876,"chg":9770,"iv":10.78,"ltp":125,"b":"Buying"},"pe":{"oi":8521,"chg":4515,"iv":18.64,"ltp":257.1,"b":"Writing"}},{"k":23550,"ce":{"oi":6787,"chg":797,"iv":10.94,"ltp":105.35,"b":"Buying"},"pe":{"oi":506,"chg":483,"iv":19.05,"ltp":289.45,"b":"Writing"}},{"k":23600,"ce":{"oi":29715,"chg":11071,"iv":10.91,"ltp":85.9,"b":"Buying"},"pe":{"oi":1897,"chg":1258,"iv":19.41,"ltp":322.65,"b":"Writing"}},{"k":23650,"ce":{"oi":5624,"chg":2294,"iv":11.3,"ltp":74.05,"b":"Buying"},"pe":{"oi":272,"chg":256,"iv":19.36,"ltp":352.05,"b":"Writing"}},{"k":23700,"ce":{"oi":35650,"chg":3469,"iv":11.34,"ltp":60.15,"b":"Buying"},"pe":{"oi":924,"chg":527,"iv":20.02,"ltp":391.7,"b":"Writing"}},{"k":23750,"ce":{"oi":16034,"chg":13558,"iv":11.47,"ltp":49.3,"b":"Buying"},"pe":{"oi":118,"chg":96,"iv":20.52,"ltp":430.5,"b":"Writing"}},{"k":23800,"ce":{"oi":45189,"chg":22844,"iv":11.71,"ltp":41.2,"b":"Buying"},"pe":{"oi":897,"chg":862,"iv":21.43,"ltp":475,"b":"Writing"}}]}]};
+const HISTORY = [{"t": "15:40", "spot": 23440.8, "pcr": 1.66, "vix": 15.52, "maxPain": 23250}];
+const DESK = {"current":{"written":"02-Nov-2026 18:40","for":"Tue 03-Nov-2026 (weekly expiry day)","stance":"Neutral to mildly bullish. Range 23,250–23,650. Buy dips, don't chase.","lines":["Monday's 388-pt rally closed at the high, and put writers chased it: 3.9L of fresh put OI at 23,200/23,250/23,300. That is now the floor for expiry day. Below it, those writers would unwind fast and 23,000 (2.3L) is the next stop.","Call writers at 23,500 were squeezed (OI −0.21L) and re-wrote higher at 23,600 (+0.91L), 23,650 and 23,700. Expect selling into 23,550–23,650 on expiry day unless 23,600 CE OI starts falling.","Spot is 191 pts above max pain (23,250). On expiry day that pull is real but it lags big moves; treat it as a reason not to chase, not a reason to short.","The next weekly (9 Nov) is call-heavy: near-ATM PCR 0.59 with 24,000 and 24,500 CE OI piling up. The market is positioned for consolidation after this move, not a breakout.","Nov futures closed at 23,424, a 17-pt discount to spot after a 190-pt premium on Friday. Cash led this rally; futures didn't fully follow. Be ready for early profit-taking.","ATM straddle 174 → the market prices ±148 pts by Tuesday's close. Put IV at 28 vs call IV at 7.5: puts are expensive, which favours selling puts on dips over buying calls."],"plan":[{"label":"Buy zone","text":"23,280–23,330 (fresh put wall), only if the first 30 min holds above 23,250"},{"label":"Target","text":"23,500–23,550; book fully near 23,600"},{"label":"Invalidation","text":"15-min close below 23,200 — stand aside, bias flips to bearish toward 23,000"},{"label":"Structure","text":"Bull put spread, 3-Nov expiry: sell 23,300 PE (≈52), buy 23,200 PE (≈23). Credit ≈29 per lot-point, max risk ≈71. Pays if Nifty closes above 23,300 on Tuesday"},{"label":"If range-bound","text":"Iron condor 23,200/23,100 PE + 23,700/23,800 CE for the day; small size, expiry-day gamma cuts both ways"},{"label":"Avoid","text":"Buying naked calls above 23,500 at open; theta on expiry day will eat a flat market"}],"risk":"Expiry day. ±150 pts is normal, a global gap can be 250+. Size so that a full-range move against you costs under 1% of capital. Paper-trade until the log below shows a track record."},"calls":[{"id":1,"opened":"30-Oct 15:40","kind":"Rule bias (pre desk view)","call":"Bullish into 3-Nov expiry","trigger":"PCR 1.62, put writing 4.8L vs 1.0L calls","invalidation":"—","status":"right","closed":"02-Nov 15:30","result":"+388 pts (23,053 → 23,441)"},{"id":2,"opened":"02-Nov 18:40","kind":"Desk view","call":"Range 23,250–23,650; buy dips to 23,300 for 23,500+","trigger":"3.9L put OI added 23,200–23,300; calls re-written at 23,600","invalidation":"15-min close < 23,200","status":"open","closed":"","result":""}]};
+/*DATA-END*/
+
+const $ = s => document.querySelector(s);
+const fmt = (n,d=0) => n==null?'—':Number(n).toLocaleString('en-IN',{maximumFractionDigits:d,minimumFractionDigits:d});
+const lakh = n => (n/1e5).toFixed(n>=1e6?0:1)+'L';
+const sgn = n => (n>0?'+':'')+fmt(n,2);
+
+// Header
+const live = DATA.market.status==='Open';
+$('#dot').className='dot'+(live?' live':'');
+$('#status').textContent = live ? 'Market open' : 'Market closed · showing last session';
+$('#stamp').textContent = DATA.chains[0].ts;
+
+// Summary strip
+const n=DATA.nifty, v=DATA.vix, c0=DATA.chains[0];
+$('#strip').innerHTML = `
+ <div class="tile"><div class="lbl">Nifty 50</div><div class="val num">${fmt(n.last,2)}</div><div class="sub num ${n.chg>=0?'up':'down'}">${sgn(n.last-n.prevClose)} (${sgn(n.chg)}%)</div></div>
+ <div class="tile"><div class="lbl">Day range</div><div class="val num" style="font-size:18px">${fmt(n.low,0)} – ${fmt(n.high,0)}</div><div class="sub num">open ${fmt(n.open,0)} · prev ${fmt(n.prevClose,0)}</div></div>
+ ${DATA.fut?`<div class="tile"><div class="lbl">Futures ${DATA.fut.expiry.slice(0,6)}</div><div class="val num">${fmt(DATA.fut.last,2)}</div><div class="sub num">${DATA.fut.last-n.last>=0?'premium':'discount'} ${fmt(Math.abs(DATA.fut.last-n.last),0)}</div></div>`:''}
+ <div class="tile"><div class="lbl">India VIX</div><div class="val num">${fmt(v.last,2)}</div><div class="sub num ${v.chg>=0?'down':'up'}">${sgn(v.chg)}%</div></div>
+ <div class="tile"><div class="lbl">PCR · ${c0.expiry.slice(0,6)}</div><div class="val num">${fmt(c0.pcr,2)}</div><div class="sub num">near-ATM ${fmt(c0.pcrNear,2)}</div></div>
+ <div class="tile"><div class="lbl">Max pain</div><div class="val num">${fmt(c0.maxPain)}</div><div class="sub num">spot ${c0.spot>c0.maxPain?'+':''}${fmt(c0.spot-c0.maxPain,0)}</div></div>
+ <div class="tile"><div class="lbl">Expected move</div><div class="val num">±${fmt(c0.expMove,0)}</div><div class="sub num">straddle ${fmt(c0.straddle,0)} · ATM ${fmt(c0.atm)}</div></div>`;
+
+// Desk view
+if (DESK.current){
+  const d=DESK.current; $('#desk').hidden=false;
+  $('#deskFor').textContent=d.for; $('#deskWritten').textContent=d.written;
+  $('#deskStance').textContent=d.stance;
+  $('#deskLines').innerHTML=d.lines.map(t=>`<li>${t}</li>`).join('');
+  $('#deskPlan').innerHTML=d.plan.map(p=>`<dt>${p.label}</dt><dd>${p.text}</dd>`).join('');
+  $('#deskRisk').textContent=d.risk;
+}
+// Call log
+if (DESK.calls && DESK.calls.length){
+  $('#logSec').hidden=false;
+  const closed=DESK.calls.filter(c=>c.status==='right'||c.status==='wrong'), right=closed.filter(c=>c.status==='right').length;
+  $('#logStat').textContent = closed.length ? `· ${right}/${closed.length} right (${Math.round(100*right/closed.length)}%) · ${DESK.calls.filter(c=>c.status==='open').length} open` : `· ${DESK.calls.length} open, none resolved yet`;
+  $('#log').innerHTML = `<tr><th>#</th><th>Opened</th><th>Call</th><th>Why</th><th>Invalidation</th><th>Outcome</th></tr>` +
+    [...DESK.calls].reverse().map(c=>`<tr><td class="num">${c.id}</td><td class="num">${c.opened}<div class="small muted">${c.kind}</div></td><td>${c.call}</td><td class="muted">${c.trigger}</td><td class="muted">${c.invalidation}</td><td><span class="pill ${c.status}">${c.status}</span>${c.result?`<div class="small num">${c.result}</div><div class="small muted num">${c.closed}</div>`:''}</td></tr>`).join('');
+}
+
+// Read
+const b=$('#bias'); b.textContent=DATA.bias;
+b.classList.add(/bullish/i.test(DATA.bias)?'b1':/bearish/i.test(DATA.bias)?'b-1':'b0');
+$('#notes').innerHTML = DATA.notes.map(t=>`<li>${t}</li>`).join('');
+
+// Expiry tabs
+let cur=0;
+$('#tabs').innerHTML = DATA.chains.map((c,i)=>`<button class="tab" role="tab" id="tab${i}" aria-selected="${i===0}">Expiry ${c.expiry}</button>`).join('');
+$('#tabs').addEventListener('click',e=>{const t=e.target.closest('.tab'); if(!t)return; cur=+t.id.slice(3); render();});
+
+function render(){
+  const c=DATA.chains[cur];
+  document.querySelectorAll('.tab').forEach((t,i)=>t.setAttribute('aria-selected',i===cur));
+  const lvTable = rows => `<table>${rows.map(r=>`<tr><td class="num">${fmt(r.k)}</td><td class="num">${lakh(r.oi)}</td><td class="num">${r.chg>=0?'+':''}${lakh(r.chg)}</td></tr>`).join('')}</table>`;
+  $('#levels').innerHTML = `
+   <div class="lv"><h2 class="pe">Support · biggest put OI</h2>${lvTable(c.support)}</div>
+   <div class="lv"><h2 class="ce">Resistance · biggest call OI</h2>${lvTable(c.resistance)}</div>
+   <div class="lv"><h2 class="pe">Puts added today</h2>${lvTable(c.peAdds)}</div>
+   <div class="lv"><h2 class="ce">Calls added today</h2>${lvTable(c.ceAdds)}</div>`;
+  drawBars('#oiChart', c, r=>r.ce.oi, r=>r.pe.oi, false);
+  drawBars('#chgChart', c, r=>r.ce.chg, r=>r.pe.chg, true);
+  drawChain(c);
+}
+
+function drawBars(sel, c, ceF, peF, signed){
+  const rows=c.rows, W=760, rowH=18, L=70, R=16, top=10;
+  const H=top+rows.length*rowH+16;
+  const mx=Math.max(1,...rows.map(r=>Math.max(Math.abs(ceF(r)),Math.abs(peF(r)))));
+  const half=(W-L-R)/2, mid=L+half;
+  const sc=val=>Math.abs(val)/mx*(half-10);
+  let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${signed?'Change in open interest':'Open interest'} by strike">`;
+  s+=`<line x1="${mid}" x2="${mid}" y1="${top}" y2="${H-14}" stroke="var(--line)"/>`;
+  rows.forEach((r,i)=>{
+    const y=top+i*rowH, ce=ceF(r), pe=peF(r);
+    // puts to the left of mid, calls to the right (unwinding flips toward the centre line on the signed chart)
+    const pw=sc(pe), cw=sc(ce);
+    const px = mid-pw, cx = mid;   // puts always left, calls always right; unwinding shown faded
+    s+=`<text x="${L-8}" y="${y+13}" text-anchor="end" font-size="11" font-family="var(--mono)" fill="${r.k===c.atm?'var(--fg)':'var(--muted)'}" font-weight="${r.k===c.atm?600:400}">${r.k}</text>`;
+    s+=`<rect data-tip="${r.k} PE  OI ${lakh(r.pe.oi)}  Δ ${r.pe.chg>=0?'+':''}${lakh(r.pe.chg)}  LTP ${r.pe.ltp}" x="${px}" y="${y+2}" width="${pw}" height="${rowH-5}" rx="2" fill="var(--pe)" opacity="${signed&&pe<0?.45:1}"/>`;
+    s+=`<rect data-tip="${r.k} CE  OI ${lakh(r.ce.oi)}  Δ ${r.ce.chg>=0?'+':''}${lakh(r.ce.chg)}  LTP ${r.ce.ltp}" x="${cx}" y="${y+2}" width="${cw}" height="${rowH-5}" rx="2" fill="var(--ce)" opacity="${signed&&ce<0?.45:1}"/>`;
+  });
+  // spot marker: interpolate between strikes
+  const ks=rows.map(r=>r.k); const i=ks.findIndex(k=>k>=c.spot);
+  if(i>0){ const y=top+(i-1+(c.spot-ks[i-1])/(ks[i]-ks[i-1]))*rowH+rowH/2;
+    s+=`<line x1="${L-4}" x2="${W-R}" y1="${y}" y2="${y}" stroke="var(--spot)" stroke-dasharray="3 3"/><text x="${W-R}" y="${y-3}" text-anchor="end" font-size="10" fill="var(--fg)" font-family="var(--mono)">spot ${fmt(c.spot,0)}</text>`; }
+  s+=`<text x="${L}" y="${H-2}" font-size="10" fill="var(--faint)">◀ puts · max ${lakh(mx)}</text><text x="${W-R}" y="${H-2}" text-anchor="end" font-size="10" fill="var(--faint)">calls ▶</text></svg>`;
+  $(sel).innerHTML=s;
+}
+
+function drawChain(c){
+  const h=`<tr><th class="ceh">Bias</th><th class="ceh">CE OI</th><th class="ceh">Δ OI</th><th class="ceh">IV</th><th class="ceh">LTP</th><th class="k">Strike</th><th class="peh">LTP</th><th class="peh">IV</th><th class="peh">Δ OI</th><th class="peh">PE OI</th><th class="peh">Bias</th></tr>`;
+  const body=c.rows.map(r=>{
+    const ceW = r.ce.chg>r.pe.chg, atm=r.k===c.atm;
+    return `<tr class="${atm?'atm':''}">
+      <td class="b ${ceW?'w':''}">${r.ce.b}</td><td class="num ${r.k<c.spot?'itm':''}">${lakh(r.ce.oi)}</td><td class="num ${r.k<c.spot?'itm':''}">${r.ce.chg>=0?'+':''}${lakh(r.ce.chg)}</td><td class="num ${r.k<c.spot?'itm':''}">${r.ce.iv||'—'}</td><td class="num ${r.k<c.spot?'itm':''}">${fmt(r.ce.ltp,2)}</td>
+      <td class="k num">${r.k}</td>
+      <td class="num ${r.k>c.spot?'itm':''}">${fmt(r.pe.ltp,2)}</td><td class="num ${r.k>c.spot?'itm':''}">${r.pe.iv||'—'}</td><td class="num ${r.k>c.spot?'itm':''}">${r.pe.chg>=0?'+':''}${lakh(r.pe.chg)}</td><td class="num ${r.k>c.spot?'itm':''}">${lakh(r.pe.oi)}</td><td class="b ${!ceW?'w':''}">${r.pe.b}</td></tr>`;}).join('');
+  $('#chain').innerHTML=h+body;
+}
+
+// Intraday history sparklines
+if (HISTORY.length>1){
+  $('#histSec').hidden=false;
+  const spark=(label,key,d=0)=>{
+    const vals=HISTORY.map(h=>h[key]); const mn=Math.min(...vals), mx=Math.max(...vals), W=220,H=56;
+    const pts=vals.map((v,i)=>`${8+i/(vals.length-1)*(W-16)},${H-8-(mx>mn?(v-mn)/(mx-mn):0.5)*(H-20)}`).join(' ');
+    const last=pts.split(' ').pop().split(',');
+    return `<div class="tile"><div class="lbl">${label}</div><div class="val num" style="font-size:18px">${fmt(vals.at(-1),d)} <span class="small muted">${HISTORY.at(-1).t}</span></div>
+      <svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto"><polyline points="${pts}" fill="none" stroke="var(--fg)" stroke-width="2"/><circle cx="${last[0]}" cy="${last[1]}" r="3.5" fill="var(--pe)"/>
+      <text x="8" y="${H-1}" font-size="9" fill="var(--faint)">${HISTORY[0].t}</text><text x="${W-8}" y="${H-1}" text-anchor="end" font-size="9" fill="var(--faint)">lo ${fmt(mn,d)} · hi ${fmt(mx,d)}</text></svg></div>`; };
+  $('#hist').innerHTML = spark('Spot','spot',0)+spark('PCR (near expiry)','pcr',2)+spark('India VIX','vix',2)+spark('Max pain','maxPain',0);
+}
+
+// Tooltips on bars
+const tip=$('#tip');
+document.addEventListener('mousemove',e=>{const t=e.target.closest('[data-tip]'); if(!t){tip.hidden=true;return;}
+  tip.textContent=t.dataset.tip; tip.hidden=false; tip.style.left=Math.min(e.clientX+12,innerWidth-tip.offsetWidth-8)+'px'; tip.style.top=(e.clientY+14)+'px';});
+document.addEventListener('touchstart',e=>{const t=e.target.closest('[data-tip]'); if(!t){tip.hidden=true;return;} tip.textContent=t.dataset.tip; tip.hidden=false; tip.style.left='16px'; tip.style.top=(e.touches[0].clientY+14)+'px';},{passive:true});
+
+render();
+</script>
