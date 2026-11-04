@@ -86,6 +86,7 @@ details>.inner{padding:4px 14px 14px;display:grid;gap:18px;border-top:1px solid 
 .tabs{display:flex;gap:6px;flex-wrap:wrap}
 .tab{border:1px solid var(--line);background:var(--panel);color:var(--muted);border-radius:999px;padding:4px 12px;font:inherit;font-size:13px;cursor:pointer}
 .tab[aria-selected="true"]{color:var(--fg);border-color:var(--fg);font-weight:600}
+.symtabs .tab{font-size:14px;padding:6px 16px}
 .tab:focus-visible{outline:2px solid var(--pe);outline-offset:2px}
 
 .chart{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:12px 12px 6px;min-width:0}
@@ -115,6 +116,8 @@ footer{font-size:12px;color:var(--muted);border-top:1px solid var(--line);paddin
     <div><h1>Nifty Options Desk</h1><div class="status"><span class="dot" id="dot"></span><span id="status"></span></div></div>
     <div class="small muted">Data: NSE option chain · stamp <span class="num" id="stamp"></span></div>
   </header>
+
+  <div class="tabs symtabs" role="tablist" id="symtabs"></div>
 
   <section class="simple" id="simple" hidden>
     <div class="light" id="light"><i></i><span id="lightLabel"></span><span class="small muted" style="font-weight:400;margin-left:auto">for <span id="simpleFor"></span></span></div>
@@ -191,7 +194,7 @@ footer{font-size:12px;color:var(--muted);border-top:1px solid var(--line);paddin
 <script>
 /*DATA-START*/
 const DATA = {"fetchedAt":"2026-11-03T10:17:16.082Z","nifty":{"last":23810.85,"chg":1.58,"open":23582.25,"high":23810.85,"low":23482.8,"prevClose":23440.8},"vix":{"last":15.67,"chg":1.09},"fut":{"expiry":"23-Nov-2026","last":23782.5,"chg":2.33},"market":{"status":"Closed","msg":"Market in Post-Close Session","tradeDate":"03-Nov-2026 15:30"},"bias":"Bullish","notes":["PCR 1.92 \u2014 put writers dominant, dips are being sold into","Fresh put writing (13.1L) outpaces call writing (-1.3L) near spot","Spot is 111 pts above max pain 23700 \u2014 gravity toward expiry is downward","Option writers' range: 23700 (put wall) to 23850 (call wall); straddle implies \u00b19.27 pts by 03-Nov-2026"],"chains":[{"expiry":"03-Nov-2026","ts":"03-Nov-2026 15:40:00","spot":23810.85,"atm":23800,"pcr":1.92,"pcrNear":1.16,"totCE":2080722,"totPE":3988968,"addCE":-128445,"addPE":1307672,"maxPain":23700,"resistance":[{"k":23850,"oi":244100,"chg":216687,"ltp":0.05},{"k":24000,"oi":146258,"chg":-45278,"ltp":0.05},{"k":24500,"oi":132109,"chg":43750,"ltp":0.05}],"support":[{"k":23700,"oi":326325,"chg":325096,"ltp":0.05},{"k":23600,"oi":213737,"chg":209688,"ltp":0.05},{"k":23650,"oi":212346,"chg":211276,"ltp":0.05}],"ceAdds":[{"k":23850,"oi":244100,"chg":216687,"ltp":0.05},{"k":23800,"oi":185977,"chg":77699,"ltp":10.85},{"k":23900,"oi":115883,"chg":58760,"ltp":0.05}],"peAdds":[{"k":23700,"oi":326325,"chg":325096,"ltp":0.05},{"k":23650,"oi":212346,"chg":211276,"ltp":0.05},{"k":23600,"oi":213737,"chg":209688,"ltp":0.05}],"ceUnwind":[{"k":23500,"oi":22392,"chg":-148014,"ltp":311.65},{"k":23400,"oi":16139,"chg":-127327,"ltp":411},{"k":23600,"oi":46206,"chg":-113924,"ltp":210.3}],"peUnwind":[{"k":23200,"oi":93670,"chg":-72228,"ltp":0.05},{"k":23300,"oi":96549,"chg":-44213,"ltp":0.05},{"k":23250,"oi":62063,"chg":-35844,"ltp":0.05}],"atmIV":{"ce":0,"pe":0.58},"straddle":10.9,"expMove":9.27,"rows":[{"k":23450,"ce":{"oi":10545,"chg":-73516,"iv":0,"ltp":360.5,"b":"Short covering"},"pe":{"oi":75459,"chg":65124,"iv":9.9,"ltp":0.05,"b":"Writing"}},{"k":23500,"ce":{"oi":22392,"chg":-148014,"iv":0,"ltp":311.65,"b":"Short covering"},"pe":{"oi":158731,"chg":140566,"iv":8.65,"ltp":0.05,"b":"Writing"}},{"k":23550,"ce":{"oi":22861,"chg":-54861,"iv":0,"ltp":260.2,"b":"Short covering"},"pe":{"oi":140620,"chg":138358,"iv":7.38,"ltp":0.05,"b":"Writing"}},{"k":23600,"ce":{"oi":46206,"chg":-113924,"iv":0,"ltp":210.3,"b":"Short covering"},"pe":{"oi":213737,"chg":209688,"iv":6.1,"ltp":0.05,"b":"Writing"}},{"k":23650,"ce":{"oi":50669,"chg":-16255,"iv":0,"ltp":160.85,"b":"Short covering"},"pe":{"oi":212346,"chg":211276,"iv":4.79,"ltp":0.05,"b":"Writing"}},{"k":23700,"ce":{"oi":90262,"chg":-25559,"iv":0,"ltp":110.9,"b":"Short covering"},"pe":{"oi":326325,"chg":325096,"iv":3.46,"ltp":0.05,"b":"Writing"}},{"k":23750,"ce":{"oi":96791,"chg":47018,"iv":0,"ltp":60.85,"b":"Buying"},"pe":{"oi":207125,"chg":206832,"iv":2.08,"ltp":0.05,"b":"Writing"}},{"k":23800,"ce":{"oi":185977,"chg":77699,"iv":0,"ltp":10.85,"b":"Buying"},"pe":{"oi":175622,"chg":174826,"iv":0.58,"ltp":0.05,"b":"Writing"}},{"k":23850,"ce":{"oi":244100,"chg":216687,"iv":1.2,"ltp":0.05,"b":"Writing"},"pe":{"oi":31991,"chg":31853,"iv":3.16,"ltp":39.05,"b":"Writing"}},{"k":23900,"ce":{"oi":115883,"chg":58760,"iv":2.63,"ltp":0.05,"b":"Writing"},"pe":{"oi":14085,"chg":13636,"iv":5.69,"ltp":89,"b":"Writing"}},{"k":23950,"ce":{"oi":52744,"chg":40669,"iv":3.98,"ltp":0.05,"b":"Writing"},"pe":{"oi":3819,"chg":3722,"iv":8.04,"ltp":139.15,"b":"Writing"}},{"k":24000,"ce":{"oi":146258,"chg":-45278,"iv":5.28,"ltp":0.05,"b":"Long unwinding"},"pe":{"oi":6644,"chg":4041,"iv":9.93,"ltp":188.7,"b":"Writing"}},{"k":24050,"ce":{"oi":67428,"chg":50351,"iv":6.55,"ltp":0.05,"b":"Writing"},"pe":{"oi":916,"chg":875,"iv":11.99,"ltp":238.75,"b":"Writing"}},{"k":24100,"ce":{"oi":86230,"chg":56179,"iv":7.79,"ltp":0.05,"b":"Writing"},"pe":{"oi":761,"chg":505,"iv":13.69,"ltp":288.4,"b":"Writing"}},{"k":24150,"ce":{"oi":42068,"chg":19037,"iv":9.02,"ltp":0.05,"b":"Writing"},"pe":{"oi":447,"chg":359,"iv":15.87,"ltp":338.75,"b":"Writing"}},{"k":24200,"ce":{"oi":102994,"chg":48419,"iv":10.23,"ltp":0.05,"b":"Writing"},"pe":{"oi":525,"chg":-152,"iv":17.7,"ltp":388.7,"b":"Long unwinding"}}]},{"expiry":"09-Nov-2026","ts":"03-Nov-2026 15:40:00","spot":23810.85,"atm":23800,"pcr":1.14,"pcrNear":0.6,"totCE":1344399,"totPE":1532366,"addCE":313768,"addPE":409793,"maxPain":23600,"resistance":[{"k":24000,"oi":89963,"chg":20542,"ltp":82.3},{"k":24500,"oi":86262,"chg":33360,"ltp":15.75},{"k":25000,"oi":75104,"chg":45952,"ltp":3.6}],"support":[{"k":23000,"oi":84670,"chg":29379,"ltp":26.15},{"k":22000,"oi":78929,"chg":39002,"ltp":6},{"k":20500,"oi":73974,"chg":38628,"ltp":2.65}],"ceAdds":[{"k":24200,"oi":58407,"chg":43260,"ltp":42.8},{"k":24400,"oi":54067,"chg":42732,"ltp":21.85},{"k":24300,"oi":56366,"chg":37711,"ltp":30.5}],"peAdds":[{"k":23600,"oi":72212,"chg":70318,"ltp":133.7},{"k":23500,"oi":73843,"chg":65315,"ltp":101},{"k":23700,"oi":55888,"chg":54963,"ltp":174}],"ceUnwind":[{"k":23300,"oi":23824,"chg":-8025,"ltp":486.05},{"k":23350,"oi":5031,"chg":-6296,"ltp":446.9},{"k":23200,"oi":16856,"chg":-5493,"ltp":573.3}],"peUnwind":[{"k":24350,"oi":0,"chg":0,"ltp":0},{"k":24450,"oi":0,"chg":0,"ltp":0},{"k":24550,"oi":0,"chg":0,"ltp":0}],"atmIV":{"ce":11.01,"pe":19.81},"straddle":376.25,"expMove":319.81,"rows":[{"k":23450,"ce":{"oi":3419,"chg":-3027,"iv":0,"ltp":366.35,"b":"Short covering"},"pe":{"oi":10849,"chg":8916,"iv":19.05,"ltp":87,"b":"Writing"}},{"k":23500,"ce":{"oi":48249,"chg":12250,"iv":0,"ltp":328.8,"b":"Buying"},"pe":{"oi":73843,"chg":65315,"iv":19.1,"ltp":101,"b":"Writing"}},{"k":23550,"ce":{"oi":6854,"chg":161,"iv":4.87,"ltp":287,"b":"Buying"},"pe":{"oi":12493,"chg":11982,"iv":19.11,"ltp":116.1,"b":"Writing"}},{"k":23600,"ce":{"oi":64880,"chg":35125,"iv":8.65,"ltp":262.15,"b":"Buying"},"pe":{"oi":72212,"chg":70318,"iv":19.21,"ltp":133.7,"b":"Writing"}},{"k":23650,"ce":{"oi":14385,"chg":8780,"iv":9.29,"ltp":229,"b":"Buying"},"pe":{"oi":17928,"chg":17659,"iv":19.22,"ltp":152,"b":"Writing"}},{"k":23700,"ce":{"oi":50354,"chg":18796,"iv":9.95,"ltp":200.6,"b":"Buying"},"pe":{"oi":55888,"chg":54963,"iv":19.4,"ltp":174,"b":"Writing"}},{"k":23750,"ce":{"oi":26768,"chg":10545,"iv":10.5,"ltp":175,"b":"Buying"},"pe":{"oi":13526,"chg":13404,"iv":19.68,"ltp":198.8,"b":"Writing"}},{"k":23800,"ce":{"oi":51167,"chg":5865,"iv":11.01,"ltp":152.65,"b":"Buying"},"pe":{"oi":28607,"chg":27708,"iv":19.81,"ltp":223.6,"b":"Writing"}},{"k":23850,"ce":{"oi":11886,"chg":5545,"iv":11.41,"ltp":132,"b":"Buying"},"pe":{"oi":2097,"chg":2071,"iv":20.45,"ltp":256.25,"b":"Writing"}},{"k":23900,"ce":{"oi":49845,"chg":14731,"iv":11.71,"ltp":113,"b":"Buying"},"pe":{"oi":4565,"chg":3869,"iv":20.84,"ltp":287.45,"b":"Writing"}},{"k":23950,"ce":{"oi":9829,"chg":4743,"iv":12.05,"ltp":97,"b":"Buying"},"pe":{"oi":916,"chg":879,"iv":21.2,"ltp":319.8,"b":"Writing"}},{"k":24000,"ce":{"oi":89963,"chg":20542,"iv":12.3,"ltp":82.3,"b":"Buying"},"pe":{"oi":14161,"chg":11648,"iv":21.43,"ltp":352,"b":"Writing"}},{"k":24050,"ce":{"oi":8650,"chg":5301,"iv":12.64,"ltp":70.6,"b":"Buying"},"pe":{"oi":597,"chg":597,"iv":21.88,"ltp":388.1,"b":"Writing"}},{"k":24100,"ce":{"oi":39942,"chg":14821,"iv":12.82,"ltp":59.05,"b":"Buying"},"pe":{"oi":788,"chg":681,"iv":23.09,"ltp":434.15,"b":"Writing"}},{"k":24150,"ce":{"oi":9501,"chg":4353,"iv":13.05,"ltp":49.7,"b":"Buying"},"pe":{"oi":310,"chg":300,"iv":23.72,"ltp":474.3,"b":"Writing"}},{"k":24200,"ce":{"oi":58407,"chg":43260,"iv":13.41,"ltp":42.8,"b":"Buying"},"pe":{"oi":1899,"chg":1438,"iv":23.78,"ltp":509.1,"b":"Writing"}}]}]};
-const HISTORY = [{"t": "09:15", "spot": 23543.8, "pcr": 1.65, "vix": 15.51, "maxPain": 23250}, {"t": "11:11", "spot": 23642.55, "pcr": 1.76, "vix": 15.91, "maxPain": 23600}, {"t": "11:16", "spot": 23637.35, "pcr": 1.74, "vix": 15.81, "maxPain": 23600}, {"t": "11:46", "spot": 23677.1, "pcr": 1.78, "vix": 15.84, "maxPain": 23600}, {"t": "12:16", "spot": 23658.15, "pcr": 1.92, "vix": 15.88, "maxPain": 23650}, {"t": "12:45", "spot": 23667.25, "pcr": 1.78, "vix": 15.95, "maxPain": 23650}, {"t": "13:15", "spot": 23697.15, "pcr": 1.82, "vix": 16.16, "maxPain": 23650}, {"t": "15:15", "spot": 23731.85, "pcr": 1.46, "vix": 15.74, "maxPain": 23700}, {"t": "15:17", "spot": 23731.85, "pcr": 1.48, "vix": 15.82, "maxPain": 23700}, {"t": "15:40", "spot": 23810.85, "pcr": 1.92, "vix": 15.67, "maxPain": 23700}];
+const HISTORY = {"nifty": [{"t": "09:15", "spot": 23543.8, "pcr": 1.65, "vix": 15.51, "maxPain": 23250}, {"t": "11:11", "spot": 23642.55, "pcr": 1.76, "vix": 15.91, "maxPain": 23600}, {"t": "11:16", "spot": 23637.35, "pcr": 1.74, "vix": 15.81, "maxPain": 23600}, {"t": "11:46", "spot": 23677.1, "pcr": 1.78, "vix": 15.84, "maxPain": 23600}, {"t": "12:16", "spot": 23658.15, "pcr": 1.92, "vix": 15.88, "maxPain": 23650}, {"t": "12:45", "spot": 23667.25, "pcr": 1.78, "vix": 15.95, "maxPain": 23650}, {"t": "13:15", "spot": 23697.15, "pcr": 1.82, "vix": 16.16, "maxPain": 23650}, {"t": "15:15", "spot": 23731.85, "pcr": 1.46, "vix": 15.74, "maxPain": 23700}, {"t": "15:17", "spot": 23731.85, "pcr": 1.48, "vix": 15.82, "maxPain": 23700}, {"t": "15:40", "spot": 23810.85, "pcr": 1.92, "vix": 15.67, "maxPain": 23700}], "bank": []};
 const DESK = {"current":{"written":"03-Nov-2026 15:40","for":"Wed 04-Nov-2026 — first session on the 9-Nov weekly (09:15 futures-basis check decides the open)","stance":"Wednesday box 23,600–23,950 with the lean still mildly up while 23,700 holds on a 15-min close — but start the session neutral until the 09:15 basis shows whether cash really is at 23,811 or nearer the 23,730–23,780 the derivatives closed at; buy 23,700–23,740 first and 23,620–23,660 second, sell only 23,930–23,980, and go with a 15-min close beyond 23,580 or 24,020 rather than fade it.","lines":["What changed: the index did not pin. From 23,732 at 15:17 the official close printed 23,810.85 — equal to the day high, +370 (+1.58%) on the day, +758 in two sessions from 23,053 — and the weekly settled there: 36 pts through #5's 23,775 line, 61 above #4's 23,750 cap, 161 above #2's 23,650. Three calls go down as wrong (record now 1 right, 4 wrong, #6 open). The 15:17 box and lean for Wednesday (23,550–23,950, mildly up while 23,650 holds) stand, with two edits: the working floor lifts to 23,700 because that is where next week's put writers moved in the last 20 minutes (23,800 PE 19.9K → 28.6K, 23,700 PE 53.1K → 55.9K, 23,700 CE 53.7K → 50.4K), and the open is treated as unknown until the basis is seen — see the pricing bullet. The expired weekly's last snapshot (PE 39.9L / CE 20.8L, down from 51.2L / 34.5L at 15:17; headline PCR 1.92) is history and nothing in it is tradable; the live PCR is next week's 1.14.","Next week's walls (9-Nov, four sessions): puts 23,500 PE 73.8K (+65.3K today), 23,600 PE 72.2K (+70.3K), 23,700 PE 55.9K (+55.0K), 23,800 PE 28.6K (+27.7K) — 261K of puts written across 23,500–23,800 in one day, the whole floor built today. Calls near spot barely moved: 23,700 CE 50.4K (−3.3K since 15:17), 23,800 CE 51.2K (+5.9K on the day), 23,900 CE 49.8K (+14.7K); between 23,700 and 23,900 puts added 102K against 55K of calls. The call writing went out of the way instead: 24,000 CE 90.0K (+20.5K, largest call on the expiry), 24,200 CE 58.4K (+43.3K), 24,300 CE 56.4K (+37.7K), 24,400 CE 54.1K (+42.7K), 24,500 CE 86.3K (+33.4K), 25,000 CE 75.1K (+46.0K) — 202K across 24,000–24,500. Two-sided strikes: 23,600 (64.9K CE / 72.2K PE), 23,700 (50.4K / 55.9K), 23,800 (51.2K / 28.6K). Max pain 23,600 (23,550 at 15:17), 211 pts under the close; PCR 1.14 (1.09); near-money 0.60 (0.69) — that ratio fell because of the 24,200–24,500 call adds, not because anyone sold calls at spot. First real cap is 24,000; there is nothing of size between 23,900 CE 49.8K and it.","Pricing, and why the open is uncertain: 23,800 straddle 152.65 + 223.60 = 376.25 → ±320 by Monday → 23,490–24,130, roughly ±160 per session. But the synthetic forward from the 23,700 / 23,800 / 23,900 pairs is 23,727 / 23,729 / 23,726 — 82–85 pts UNDER the official close (it was 22 under at 15:17, when the 15:17 risk line said a persisting discount would drop the lean to neutral). Nov futures 23,782.50 moved the same way: 28 under cash now against 23 over at 15:17 — futures gained 28 in the last 20 minutes while the index's official close gained 79. The uniform 9-vol gap between put IVs (19.4–21.4) and call IVs (10–12) across every strike is the same forward mismatch, not a downside bid; real ATM vol is the VIX, 15.67 (+1.1% on an up day — mild hedging). Reading: both the futures and next week's options closed pricing cash at ≈23,720–23,760, so the 23,811 close is the number the weekly settled on but probably not where Wednesday starts. That is why the lean is held at mildly up rather than cut to neutral: the discount sits in the official close, not in next week's book. If Nov futures open under cash again at 09:15, the lean is neutral and the floor, not the breakout, is the trade.","Wednesday frame: a 09:15 print at 23,750–23,790 is a flat open, not a gap-down, and a dip into 23,700–23,740 lands on the 23,700 two-sided strike (50.4K / 55.9K) with 23,750 PE 13.5K and 23,800 PE 28.6K writers above it — that is the first buy. The second is 23,620–23,660 on next week's 23,600 straddle (64.9K / 72.2K) and 23,650 PE 17.9K; below that 23,500 PE 73.8K and then air to 23,000 PE 84.7K. Above, 23,850–23,950 is open (23,850 CE 11.9K, 23,950 CE 9.8K) until 24,000 CE 90.0K, so a day that holds 23,700 has 23,900–23,950 available; a 15-min close over 24,020 traps the 90K and puts 24,100 CE 39.9K / 24,200 CE 58.4K / 24,400 CE 54.1K in play — go with it. Max pain 23,600 and the two-day +758 are the gravity arguments for the 23,600–23,700 retest at some point this week; they are not reasons to short the open.","Weekly settlement marks (03-Nov, settle 23,810.85): #4's sell at 23,700–23,725 was offered and lost −99 to settlement; #5's long from 23,660 booked +50 at 23,710; the 12:16 (23,600/23,500 PE, +14.25) and 13:15 (23,650/23,550 PE, +12.50) bull put spreads were booked at target; the 11:46 condor was closed per plan on the 23,720 trigger; the 12:45 condor, rolled at 15:17 to 23,750/23,850 CE for a net credit of 15.70, settled with the call spread worth 60.85 → −45.15 (holding unrolled would have been −58.85). The structures worked because they were sold below spot; the pin calls did not because the market trended on an expiry day — the lesson in the record, not a caveat to it."],"plan":[{"label":"Buy zone","text":"23,700–23,740 first, against the 9-Nov 23,700 two-sided strike (50.4K CE / 55.9K PE) and the 23,750 / 23,800 put writers (13.5K / 28.6K, +41K today); 23,620–23,660 second, on the 23,600 straddle (64.9K / 72.2K) and 23,650 PE 17.9K. Stop on a 15-min close below 23,580. Do not chase an opening gap above 23,850 after a close-at-high that the futures did not confirm — wait for the retrace, or for 23,800 to hold as support on a 15-min close"},{"label":"Sell zone","text":"23,930–23,980 against 24,000 CE 90.0K (+20.5K) and 23,900 CE 49.8K, only on a stall with the 24,000 CE OI still growing at that refresh; cover 23,850, stop on a 15-min close above 24,020. Not at the open on the 'close artefact' theory alone — the first 15-min bar decides"},{"label":"Target","text":"Longs from 23,720 → 23,850, stretch 23,930 (nothing of size between 23,900 CE 49.8K and 24,000 CE 90.0K); longs from 23,640 → 23,780. Shorts from 23,960 → 23,850, stretch 23,800"},{"label":"Invalidation","text":"15-min close below 23,580 → next week's 23,600 straddle breaks, 23,500 PE 73.8K is the next floor and 23,000 PE 84.7K after it; stand aside, the mildly-up lean is gone. 15-min close above 24,020 → 24,000 CE 90.0K trapped, 24,100 (39.9K) / 24,200 (58.4K) / 24,300 (56.4K) / 24,400 (54.1K) next; go with it, do not fade. Basis rule: Nov futures opening under cash at 09:15 = lean neutral until they reclaim a premium"},{"label":"Structure","text":"9-Nov bull put spread: sell 23,700 PE (≈174.00) / buy 23,600 PE (≈133.70). Net credit ≈40.30 at the closing marks, max risk ≈59.70, breakeven ≈23,660 — short strike on the two-sided 23,700 where next week's put writers moved today. Those marks carry the forward artefact (puts priced off ≈23,727), so expect ≈32–35 if the open confirms 23,800 cash and ≈45 on the dip into 23,700–23,740; enter on the dip, not at the bell. Close at 2/3 of the credit kept, or on a 15-min close under 23,640. Conservative alternative with the short strike under max pain: 23,600 / 23,500 PE for ≈32.70 (133.70 − 101.00), breakeven ≈23,567"},{"label":"Avoid","text":"Buying the 9-Nov 23,800 CE (152.65, breakeven 23,953 by Monday) or 23,900 CE (113.00, breakeven 24,013) as a gap-chase — both breakevens sit under the 24,000 CE 90.0K wall with 202K of calls stacked 24,000–24,500 behind it; if the upside is right the put spread pays for it with 60 of risk instead of 153. Also avoid reading the expired weekly's PCR 1.92 or its 23,850 call wall as live positioning — that board is gone"}],"risk":"The open is the risk: the official close (23,810.85) and the derivatives (futures 23,782.50, 9-Nov forward ≈23,727) disagree by 30–85 pts, so the first 15-min bar can print 50 pts either side of the close with no new information. Half size until the basis is known and 23,700 has held or broken on a 15-min close. After +758 in two sessions and 211 pts over next week's max pain, a 23,600–23,700 retest this week is the base case; the lean says it gets bought, not that it does not come. Record 1 right, 4 wrong, 1 open (#6, Wednesday: box 23,550–23,950, invalidations 23,580 / 24,020) — three pin calls failed today because the expiry trended; the range-selling structures still paid. Still paper-trading; the log does not yet show an edge."},"calls":[{"id":1,"opened":"30-Oct 15:40","kind":"Rule-based","call":"Nifty likely to rise into Tuesday's expiry","trigger":"Far more traders were betting it won't fall than betting it will","invalidation":"—","status":"right","closed":"02-Nov 15:30","result":"Right: Nifty rose 388 points (23,053 → 23,441)"},{"id":2,"opened":"02-Nov 18:40","kind":"Desk view","call":"Nifty to stay between 23,250 and 23,650; buy a dip to 23,300","trigger":"Heavy bets placed that it won't fall below 23,200–23,300","invalidation":"15-min close below 23,200","status":"wrong","closed":"03-Nov 15:30","result":"Wrong: it never dipped (low 23,483) and broke above 23,650, closing at 23,811"},{"id":3,"opened":"03-Nov 09:16","kind":"Desk view","call":"Stay between 23,400 and 23,650; sell near the top, buy near 23,450","trigger":"Morning jump was being sold by traders betting against 23,600–23,650","invalidation":"15-min close below 23,380 or above 23,660","status":"wrong","closed":"03-Nov 11:46","result":"Wrong: it broke above 23,660 by 11:45; selling the top lost 52 points"},{"id":4,"opened":"03-Nov 11:11","kind":"Desk view","call":"Stay between 23,550 and 23,750; buy 23,600, sell 23,700","trigger":"Support rebuilt at 23,500–23,600; traders betting against 23,700–23,850","invalidation":"15-min close below 23,540 or above 23,760","status":"wrong","closed":"03-Nov 15:30","result":"Wrong: closed at 23,811, above the range; selling 23,712 lost 99 points"},{"id":5,"opened":"03-Nov 13:15","kind":"Desk view","call":"Finish the day between 23,650 and 23,775; buy 23,650, don't sell at 23,700","trigger":"Traders who had bet against a rise gave up; support moved up to 23,650–23,800","invalidation":"15-min close below 23,620 or above 23,775","status":"wrong","closed":"03-Nov 15:30","result":"Wrong on the range (closed 23,811), though the 23,660 buy made 50 points"},{"id":6,"opened":"03-Nov 15:17","kind":"Desk view","call":"Wednesday: stay between 23,550 and 23,950, leaning up while 23,650 holds; buy 23,620–23,660","trigger":"Next week's support built at 23,600–23,700; first big ceiling is 24,000","invalidation":"15-min close below 23,580 or above 24,020","status":"open","closed":"","result":""}],"lot":65,"simple":{"written":"03-Nov-2026 15:40","for":"Wednesday 4 Nov","light":"amber","lightLabel":"Wait for a dip, then buy","headline":"Nifty has jumped 2 days in a row (+758 points). Don't chase it. Let it come back a little before buying.","do":"If Nifty dips to 23,700–23,740 and stays there for 15 minutes, that is the buying area. Aim for 23,850.","dont":"Don't buy at the opening bell just because yesterday closed strong. Don't buy call options hoping for a big breakout above 24,000.","stop":"If a 15-minute candle closes below 23,580, stop. Stay out for the rest of the day.","trade":{"name":"Sell a put spread (makes money if Nifty stays above 23,700 till Monday)","legs":["SELL 1 lot  Nifty 9-Nov  23,700 PE  at about ₹174","BUY  1 lot  Nifty 9-Nov  23,600 PE  at about ₹134"],"credit":"You collect about ₹40 per point × 65 = ₹2,600","maxLoss":"The most you can lose: ₹3,900 (60 points × 65)","when":"Enter only when Nifty is in the 23,700–23,740 dip, not at the open","exit":"Close it if Nifty closes a 15-min candle below 23,640, or once you've kept two-thirds of the ₹2,600"},"why":["Big traders have placed heavy bets that Nifty will NOT fall below 23,500–23,800 this week. That works like a floor under the market.","Almost nobody is betting on a fall just below here; the bearish bets start at 24,000. So 24,000 is the ceiling for now.","Nifty closed at its high (23,811), but Nifty futures closed lower (23,782). That hints Wednesday may open a little softer than the close suggests. Hence: wait for the dip.","The market is pricing roughly ±160 points of movement per day this week. A dip to 23,700 is normal, not a crash."],"risk":"Trade one lot only. ₹3,900 is the maximum loss on this trade. Paper-trade (write it down, don't place it) for two weeks and compare with the call log below before using real money.","glossary":[["PE / put option","A bet that Nifty will fall. Buying one pays if it falls; selling one pays you upfront and costs you if it falls."],["CE / call option","A bet that Nifty will rise."],["Lot","Nifty options trade in lots of 65 units. ₹1 of option price = ₹65 per lot."],["Put spread","Sell one put, buy a cheaper one below it. You collect money, and your loss is capped."],["15-min candle close","Wait for the 15-minute bar on the chart to finish before acting, so one spike doesn't fool you."]]}};
 /*DATA-END*/
 
@@ -200,72 +203,104 @@ const fmt = (n,d=0) => n==null?'—':Number(n).toLocaleString('en-IN',{maximumFr
 const lakh = n => (n/1e5).toFixed(n>=1e6?0:1)+'L';
 const sgn = n => (n>0?'+':'')+fmt(n,2);
 
-// Header
-const live = DATA.market.status==='Open';
-$('#dot').className='dot'+(live?' live':'');
-$('#status').textContent = live ? 'Market open' : 'Market closed · showing last session';
-$('#stamp').textContent = DATA.chains[0].ts;
+// ---- symbol switch (Nifty / Bank Nifty) ----
+const SYMS = [['nifty','Nifty 50'],['bank','Bank Nifty']].filter(([k])=> k==='nifty' || DATA.bank);
+let sym = 'nifty';
+try { const h=location.hash.replace('#',''); if (SYMS.some(s=>s[0]===h)) sym=h; } catch(e){}
+$('#symtabs').innerHTML = SYMS.map(([k,l])=>`<button class="tab" role="tab" id="sym-${k}" aria-selected="${k===sym}">${l}</button>`).join('');
+$('#symtabs').addEventListener('click',e=>{const t=e.target.closest('.tab'); if(!t)return; sym=t.id.slice(4); try{history.replaceState(null,'','#'+sym)}catch(e){} show();});
 
-// Summary strip
-// After 15:30 on an expiry day, the expiring chain is dead — roll to the next one
-const stampDay=DATA.chains[0].ts.split(' ')[0], stampTime=DATA.chains[0].ts.split(' ')[1]||'';
-const PRIMARY = DATA.chains.findIndex(c=>!(c.expiry===stampDay && stampTime>='15:30'));
-const n=DATA.nifty, v=DATA.vix, c0=DATA.chains[PRIMARY<0?0:PRIMARY];
-$('#strip').innerHTML = `
- <div class="tile"><div class="lbl">Nifty 50</div><div class="val num">${fmt(n.last,2)}</div><div class="sub num ${n.chg>=0?'up':'down'}">${sgn(n.last-n.prevClose)} (${sgn(n.chg)}%)</div></div>
- <div class="tile"><div class="lbl">Day range</div><div class="val num" style="font-size:18px">${fmt(n.low,0)} – ${fmt(n.high,0)}</div><div class="sub num">open ${fmt(n.open,0)} · prev ${fmt(n.prevClose,0)}</div></div>
- ${DATA.fut?`<div class="tile"><div class="lbl">Futures ${DATA.fut.expiry.slice(0,6)}</div><div class="val num">${fmt(DATA.fut.last,2)}</div><div class="sub num">${DATA.fut.last-n.last>=0?'premium':'discount'} ${fmt(Math.abs(DATA.fut.last-n.last),0)}</div></div>`:''}
- <div class="tile"><div class="lbl">India VIX</div><div class="val num">${fmt(v.last,2)}</div><div class="sub num ${v.chg>=0?'down':'up'}">${sgn(v.chg)}%</div></div>
- <div class="tile"><div class="lbl">Expected move by ${c0.expiry.slice(0,6)}</div><div class="val num">±${fmt(c0.expMove,0)}</div><div class="sub">what option prices imply</div></div>`;
-$('#techStrip').innerHTML = `
- <div class="tile"><div class="lbl">PCR · ${c0.expiry.slice(0,6)}</div><div class="val num">${fmt(c0.pcr,2)}</div><div class="sub num">near-ATM ${fmt(c0.pcrNear,2)}</div></div>
- <div class="tile"><div class="lbl">Max pain</div><div class="val num">${fmt(c0.maxPain)}</div><div class="sub num">spot ${c0.spot>c0.maxPain?'+':''}${fmt(c0.spot-c0.maxPain,0)}</div></div>
- <div class="tile"><div class="lbl">ATM straddle</div><div class="val num">${fmt(c0.straddle,0)}</div><div class="sub num">IV CE ${c0.atmIV.ce} · PE ${c0.atmIV.pe}</div></div>`;
+let D, K, HIST, cur;
+function show(){
+  D = sym==='bank' ? DATA.bank : DATA;
+  K = sym==='bank' ? (DESK.bank||{}) : DESK;
+  HIST = Array.isArray(HISTORY) ? (sym==='bank'?[]:HISTORY) : (HISTORY[sym]||[]);
+  document.querySelectorAll('#symtabs .tab').forEach(t=>t.setAttribute('aria-selected',t.id==='sym-'+sym));
+  const label = SYMS.find(s=>s[0]===sym)[1];
 
-// Beginner view
-if (DESK.simple){
-  const s=DESK.simple; $('#simple').hidden=false;
-  $('#light').classList.add(s.light); $('#lightLabel').textContent=s.lightLabel; $('#simpleFor').textContent=s.for;
-  $('#simpleHeadline').textContent=s.headline; $('#simpleDo').textContent=s.do; $('#simpleDont').textContent=s.dont; $('#simpleStop').textContent=s.stop;
-  const tr=s.trade; $('#trade').innerHTML = tr ? `<div class="name">Trade idea: ${tr.name}</div><div class="legs">${tr.legs.map(l=>`<div>${l}</div>`).join('')}</div><div class="m"><div>${tr.credit}</div><div>${tr.maxLoss}</div><div><b>When:</b> ${tr.when}</div><div><b>Exit:</b> ${tr.exit}</div></div>` : '';
-  $('#simpleWhy').innerHTML=s.why.map(t=>`<li>${t}</li>`).join('');
-  $('#simpleRisk').textContent=s.risk;
-  $('#gloss').innerHTML=(s.glossary||[]).map(g=>`<div><b>${g[0]}</b>${g[1]}</div>`).join('');
+  // Header
+  const live = DATA.market.status==='Open';
+  $('#dot').className='dot'+(live?' live':'');
+  $('#status').textContent = live ? 'Market open' : 'Market closed · showing last session';
+  $('#stamp').textContent = D.chains[0].ts;
+
+  // After 15:30 on an expiry day, the expiring chain is dead — roll to the next one
+  const stampDay=D.chains[0].ts.split(' ')[0], stampTime=D.chains[0].ts.split(' ')[1]||'';
+  const PRIMARY = Math.max(0, D.chains.findIndex(c=>!(c.expiry===stampDay && stampTime>='15:30')));
+  const n=D.nifty, v=DATA.vix, c0=D.chains[PRIMARY];
+  $('#strip').innerHTML = `
+   <div class="tile"><div class="lbl">${label}</div><div class="val num">${fmt(n.last,2)}</div><div class="sub num ${n.chg>=0?'up':'down'}">${sgn(n.last-n.prevClose)} (${sgn(n.chg)}%)</div></div>
+   <div class="tile"><div class="lbl">Day range</div><div class="val num" style="font-size:18px">${fmt(n.low,0)} – ${fmt(n.high,0)}</div><div class="sub num">open ${fmt(n.open,0)} · prev ${fmt(n.prevClose,0)}</div></div>
+   ${D.fut?`<div class="tile"><div class="lbl">Futures ${D.fut.expiry.slice(0,6)}</div><div class="val num">${fmt(D.fut.last,2)}</div><div class="sub num">${D.fut.last-n.last>=0?'premium':'discount'} ${fmt(Math.abs(D.fut.last-n.last),0)}</div></div>`:''}
+   <div class="tile"><div class="lbl">India VIX</div><div class="val num">${fmt(v.last,2)}</div><div class="sub num ${v.chg>=0?'down':'up'}">${sgn(v.chg)}%</div></div>
+   <div class="tile"><div class="lbl">Expected move by ${c0.expiry.slice(0,6)}</div><div class="val num">±${fmt(c0.expMove,0)}</div><div class="sub">what option prices imply</div></div>`;
+  $('#techStrip').innerHTML = `
+   <div class="tile"><div class="lbl">PCR · ${c0.expiry.slice(0,6)}</div><div class="val num">${fmt(c0.pcr,2)}</div><div class="sub num">near-ATM ${fmt(c0.pcrNear,2)}</div></div>
+   <div class="tile"><div class="lbl">Max pain</div><div class="val num">${fmt(c0.maxPain)}</div><div class="sub num">spot ${c0.spot>c0.maxPain?'+':''}${fmt(c0.spot-c0.maxPain,0)}</div></div>
+   <div class="tile"><div class="lbl">ATM straddle</div><div class="val num">${fmt(c0.straddle,0)}</div><div class="sub num">IV CE ${c0.atmIV.ce} · PE ${c0.atmIV.pe}</div></div>`;
+
+  // Beginner view
+  const s=K.simple; $('#simple').hidden=!s;
+  if (s){
+    $('#light').className='light '+(s.light||''); $('#lightLabel').textContent=s.lightLabel; $('#simpleFor').textContent=s.for;
+    $('#simpleHeadline').textContent=s.headline; $('#simpleDo').textContent=s.do; $('#simpleDont').textContent=s.dont; $('#simpleStop').textContent=s.stop;
+    const tr=s.trade; $('#trade').hidden=!tr; $('#trade').innerHTML = tr ? `<div class="name">Trade idea: ${tr.name}</div><div class="legs">${tr.legs.map(l=>`<div>${l}</div>`).join('')}</div><div class="m"><div>${tr.credit}</div><div>${tr.maxLoss}</div><div><b>When:</b> ${tr.when}</div><div><b>Exit:</b> ${tr.exit}</div></div>` : '';
+    $('#simpleWhy').innerHTML=s.why.map(t=>`<li>${t}</li>`).join('');
+    $('#simpleRisk').textContent=s.risk;
+    $('#gloss').innerHTML=(s.glossary||DESK.simple?.glossary||[]).map(g=>`<div><b>${g[0]}</b>${g[1]}</div>`).join('');
+  } else {
+    $('#simple').hidden=false; $('#light').className='light'; $('#lightLabel').textContent='No plan written yet'; $('#simpleFor').textContent=label;
+    $('#simpleHeadline').textContent=`The ${label} plan appears here after the next refresh.`; $('#simpleDo').textContent='—'; $('#simpleDont').textContent='—'; $('#simpleStop').textContent='—';
+    $('#trade').innerHTML=''; $('#trade').hidden=true; $('#simpleWhy').innerHTML=''; $('#simpleRisk').textContent=''; $('#gloss').innerHTML='';
+  }
+  // Analyst notes
+  const d=K.current; $('#desk').hidden=!d;
+  if (d){
+    $('#deskFor').textContent=d.for; $('#deskWritten').textContent=d.written;
+    $('#deskStance').textContent=d.stance;
+    $('#deskLines').innerHTML=d.lines.map(t=>`<li>${t}</li>`).join('');
+    $('#deskPlan').innerHTML=d.plan.map(p=>`<dt>${p.label}</dt><dd>${p.text}</dd>`).join('');
+    $('#deskRisk').textContent=d.risk;
+  }
+  // Track record
+  const calls=K.calls||[]; $('#logSec').hidden=!calls.length;
+  if (calls.length){
+    const closed=calls.filter(c=>c.status==='right'||c.status==='wrong'), right=closed.filter(c=>c.status==='right').length;
+    $('#logStat').textContent = closed.length ? `· ${right}/${closed.length} right (${Math.round(100*right/closed.length)}%) · ${calls.filter(c=>c.status==='open').length} open` : `· ${calls.length} open, none resolved yet`;
+    $('#log').innerHTML = [...calls].reverse().map(c=>`<div class="call">
+      <div class="top"><span class="pill ${c.status}">${c.status}</span><span class="num small muted">#${c.id}</span><span class="when num">${c.opened}${c.closed?' → '+c.closed:''}</span></div>
+      <div class="what">${c.call}</div>
+      <div class="why">Why: ${c.trigger}${c.invalidation&&c.invalidation!=='—'?` · Stop: ${c.invalidation}`:''}</div>
+      ${c.result?`<div class="out"><b>Outcome:</b> ${c.result}</div>`:''}</div>`).join('');
+  }
+
+  // Rule-based read
+  const b=$('#bias'); b.textContent=D.bias; b.className='bias '+(/bullish/i.test(D.bias)?'b1':/bearish/i.test(D.bias)?'b-1':'b0');
+  $('#notes').innerHTML = D.notes.map(t=>`<li>${t}</li>`).join('');
+
+  // Expiry tabs
+  cur=PRIMARY;
+  $('#tabs').innerHTML = D.chains.map((c,i)=>`<button class="tab" role="tab" id="tab${i}" aria-selected="${i===cur}">Expiry ${c.expiry}${(c.expiry===stampDay && stampTime>='15:30')?' (expired)':''}</button>`).join('');
+  render();
+
+  // Intraday history sparklines
+  $('#histSec').hidden = !(HIST.length>1);
+  if (HIST.length>1){
+    const spark=(lbl,key,dd=0)=>{
+      const vals=HIST.map(h=>h[key]); const mn=Math.min(...vals), mx=Math.max(...vals), W=220,H=56;
+      const pts=vals.map((v,i)=>`${8+i/(vals.length-1)*(W-16)},${H-8-(mx>mn?(v-mn)/(mx-mn):0.5)*(H-20)}`).join(' ');
+      const last=pts.split(' ').pop().split(',');
+      return `<div class="tile"><div class="lbl">${lbl}</div><div class="val num" style="font-size:18px">${fmt(vals.at(-1),dd)} <span class="small muted">${HIST.at(-1).t}</span></div>
+        <svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto"><polyline points="${pts}" fill="none" stroke="var(--fg)" stroke-width="2"/><circle cx="${last[0]}" cy="${last[1]}" r="3.5" fill="var(--pe)"/>
+        <text x="8" y="${H-1}" font-size="9" fill="var(--faint)">${HIST[0].t}</text><text x="${W-8}" y="${H-1}" text-anchor="end" font-size="9" fill="var(--faint)">lo ${fmt(mn,dd)} · hi ${fmt(mx,dd)}</text></svg></div>`; };
+    $('#hist').innerHTML = spark('Spot','spot',0)+spark('PCR (near expiry)','pcr',2)+spark('India VIX','vix',2)+spark('Max pain','maxPain',0);
+  }
 }
-// Desk view
-if (DESK.current){
-  const d=DESK.current; $('#desk').hidden=false;
-  $('#deskFor').textContent=d.for; $('#deskWritten').textContent=d.written;
-  $('#deskStance').textContent=d.stance;
-  $('#deskLines').innerHTML=d.lines.map(t=>`<li>${t}</li>`).join('');
-  $('#deskPlan').innerHTML=d.plan.map(p=>`<dt>${p.label}</dt><dd>${p.text}</dd>`).join('');
-  $('#deskRisk').textContent=d.risk;
-}
-// Call log
-if (DESK.calls && DESK.calls.length){
-  $('#logSec').hidden=false;
-  const closed=DESK.calls.filter(c=>c.status==='right'||c.status==='wrong'), right=closed.filter(c=>c.status==='right').length;
-  $('#logStat').textContent = closed.length ? `· ${right}/${closed.length} right (${Math.round(100*right/closed.length)}%) · ${DESK.calls.filter(c=>c.status==='open').length} open` : `· ${DESK.calls.length} open, none resolved yet`;
-  $('#log').innerHTML = [...DESK.calls].reverse().map(c=>`<div class="call">
-    <div class="top"><span class="pill ${c.status}">${c.status}</span><span class="num small muted">#${c.id}</span><span class="when num">${c.opened}${c.closed?' → '+c.closed:''}</span></div>
-    <div class="what">${c.call}</div>
-    <div class="why">Why: ${c.trigger}${c.invalidation&&c.invalidation!=='—'?` · Stop: ${c.invalidation}`:''}</div>
-    ${c.result?`<div class="out"><b>Outcome:</b> ${c.result}</div>`:''}</div>`).join('');
-}
-
-// Read
-const b=$('#bias'); b.textContent=DATA.bias;
-b.classList.add(/bullish/i.test(DATA.bias)?'b1':/bearish/i.test(DATA.bias)?'b-1':'b0');
-$('#notes').innerHTML = DATA.notes.map(t=>`<li>${t}</li>`).join('');
-
-// Expiry tabs
-let cur=PRIMARY<0?0:PRIMARY;
-$('#tabs').innerHTML = DATA.chains.map((c,i)=>`<button class="tab" role="tab" id="tab${i}" aria-selected="${i===cur}">Expiry ${c.expiry}${(c.expiry===stampDay && stampTime>='15:30')?' (expired)':''}</button>`).join('');
 $('#tabs').addEventListener('click',e=>{const t=e.target.closest('.tab'); if(!t)return; cur=+t.id.slice(3); render();});
 
 function render(){
-  const c=DATA.chains[cur];
-  document.querySelectorAll('.tab').forEach((t,i)=>t.setAttribute('aria-selected',i===cur));
+  const c=D.chains[cur];
+  document.querySelectorAll('#tabs .tab').forEach((t,i)=>t.setAttribute('aria-selected',i===cur));
   const lvTable = rows => `<table>${rows.map(r=>`<tr><td class="num">${fmt(r.k)}</td><td class="num">${lakh(r.oi)}</td><td class="num">${r.chg>=0?'+':''}${lakh(r.chg)}</td></tr>`).join('')}</table>`;
   $('#levels').innerHTML = `
    <div class="lv"><h2 class="pe">Support · biggest put OI</h2>${lvTable(c.support)}</div>
@@ -313,25 +348,12 @@ function drawChain(c){
   $('#chain').innerHTML=h+body;
 }
 
-// Intraday history sparklines
-if (HISTORY.length>1){
-  $('#histSec').hidden=false;
-  const spark=(label,key,d=0)=>{
-    const vals=HISTORY.map(h=>h[key]); const mn=Math.min(...vals), mx=Math.max(...vals), W=220,H=56;
-    const pts=vals.map((v,i)=>`${8+i/(vals.length-1)*(W-16)},${H-8-(mx>mn?(v-mn)/(mx-mn):0.5)*(H-20)}`).join(' ');
-    const last=pts.split(' ').pop().split(',');
-    return `<div class="tile"><div class="lbl">${label}</div><div class="val num" style="font-size:18px">${fmt(vals.at(-1),d)} <span class="small muted">${HISTORY.at(-1).t}</span></div>
-      <svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto"><polyline points="${pts}" fill="none" stroke="var(--fg)" stroke-width="2"/><circle cx="${last[0]}" cy="${last[1]}" r="3.5" fill="var(--pe)"/>
-      <text x="8" y="${H-1}" font-size="9" fill="var(--faint)">${HISTORY[0].t}</text><text x="${W-8}" y="${H-1}" text-anchor="end" font-size="9" fill="var(--faint)">lo ${fmt(mn,d)} · hi ${fmt(mx,d)}</text></svg></div>`; };
-  $('#hist').innerHTML = spark('Spot','spot',0)+spark('PCR (near expiry)','pcr',2)+spark('India VIX','vix',2)+spark('Max pain','maxPain',0);
-}
-
 // Tooltips on bars
 const tip=$('#tip');
 document.addEventListener('mousemove',e=>{const t=e.target.closest('[data-tip]'); if(!t){tip.hidden=true;return;}
   tip.textContent=t.dataset.tip; tip.hidden=false; tip.style.left=Math.min(e.clientX+12,innerWidth-tip.offsetWidth-8)+'px'; tip.style.top=(e.clientY+14)+'px';});
 document.addEventListener('touchstart',e=>{const t=e.target.closest('[data-tip]'); if(!t){tip.hidden=true;return;} tip.textContent=t.dataset.tip; tip.hidden=false; tip.style.left='16px'; tip.style.top=(e.touches[0].clientY+14)+'px';},{passive:true});
 
-render();
+show();
 </script>
 </body></html>
