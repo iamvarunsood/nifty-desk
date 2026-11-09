@@ -2,3 +2,4 @@
 05-Nov 18:22 | OK attempt=1 home=200 spot=24536.6 ts=05-Nov-2026 15:40:00 rows=135
 06-Nov 15:28 | OK attempt=1 home=200 spot=24938.9 ts=06-Nov-2026 15:27:49 rows=147
 06-Nov 22:38 | FAIL attempt=1 ReadTimeout: HTTPSConnectionPool(host='www.nseindia.com', port=443): Read timed out. (read ti status=None/None ; FAIL attempt=2 ReadTimeout: HTTPSConnectionPool(host='www.nseindia.com', port=443): Read timed out. (read ti status=None/None ; FAIL attempt=3 ReadTimeout: HTTPSConnectionPool(host='www.nseindia.com', port=443): Read timed out. (read ti status=None/None
+09-Nov 15:57 | OK attempt=1 home=200 spot=25044.65 ts=09-Nov-2026 15:40:00 rows=147
