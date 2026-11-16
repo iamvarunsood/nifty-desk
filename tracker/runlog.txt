@@ -2,3 +2,4 @@
 16-Nov 06:19Z | data 16-Nov-2026 11:45 | spot 25220 | fetch refreshed | push PUSHED | add_repo tool absent, used existing clone
 16-Nov 06:52Z | data 16-Nov-2026 12:16 | spot 25295 | fetch refreshed | push PUSHED | ok
 16-Nov 07:22Z | data 16-Nov-2026 12:46 | spot 25263.5 | fetch refreshed | push PUSHED | artifact published; add_repo tool absent, used existing clone
+16-Nov 07:49Z | data 16-Nov-2026 13:14 | spot 25263 | fetch refreshed | push PUSHED | artifact published; add_repo tool absent, synced existing clone (rm blocked by safety check)
