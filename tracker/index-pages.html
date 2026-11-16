@@ -1,0 +1,382 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><meta name="color-scheme" content="light dark"><meta name="robots" content="noindex"><style>html{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui}img{max-width:100%}[hidden]{display:none!important}</style><title>Nifty Options Desk</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a trading-desk sheet. Summary strip, then levels, then the OI profile, then the chain. Phone-first, one column. */
+:root{
+  --bg:#f6f5f2; --panel:#ffffff; --line:#dedbd3; --fg:#1c1b18; --muted:#6b685f; --faint:#a39f93;
+  --ce:#C8552D; --pe:#1F8A70; --ce-soft:#f7e3da; --pe-soft:#d9efe8;
+  --good:#1F8A70; --bad:#C8552D; --warn:#a86b00; --spot:#1c1b18;
+  --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#141413; --panel:#1e1e1c; --line:#33322e; --fg:#ecebe6; --muted:#a6a398; --faint:#6e6b62;
+  --ce:#E06A42; --pe:#2FA383; --ce-soft:#3a2219; --pe-soft:#17302a; --good:#2FA383; --bad:#E06A42; --warn:#d7a04a; --spot:#ecebe6; color-scheme:dark } }
+:root[data-theme="dark"]{
+  --bg:#141413; --panel:#1e1e1c; --line:#33322e; --fg:#ecebe6; --muted:#a6a398; --faint:#6e6b62;
+  --ce:#E06A42; --pe:#2FA383; --ce-soft:#3a2219; --pe-soft:#17302a; --good:#2FA383; --bad:#E06A42; --warn:#d7a04a; --spot:#ecebe6; color-scheme:dark }
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--sans);font-size:15px;line-height:1.45;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:14px 40px}
+.wrap{max-width:860px;margin:0 auto;display:grid;gap:18px} .wrap>*{min-width:0}
+h1{font-size:17px;font-weight:600;margin:0;letter-spacing:.01em}
+h2{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:0 0 10px}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.muted{color:var(--muted)} .small{font-size:12.5px}
+.up{color:var(--good)} .down{color:var(--bad)}
+
+header{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:baseline;justify-content:space-between;border-bottom:1px solid var(--line);padding-bottom:10px}
+.status{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--muted)}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--faint)} .dot.live{background:var(--good)}
+
+.strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(128px,1fr));gap:10px}
+.tile{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:10px 12px;min-width:0}
+.tile .lbl{font-size:11.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted)}
+.tile .val{font-size:22px;font-weight:500;line-height:1.15;margin-top:2px}
+.tile .sub{font-size:12.5px;color:var(--muted);margin-top:2px}
+.bias{display:inline-block;padding:2px 9px;border-radius:999px;font-size:12.5px;font-weight:600;border:1px solid var(--line)}
+.bias.b1{background:var(--pe-soft);color:var(--pe)} .bias.b-1{background:var(--ce-soft);color:var(--ce)}
+
+.simple{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:14px;display:grid;gap:12px}
+.light{display:flex;align-items:center;gap:10px;font-weight:600;font-size:15px}
+.light i{width:14px;height:14px;border-radius:50%;flex:none;background:var(--warn)} .light.green i{background:var(--good)} .light.red i{background:var(--bad)}
+.headline{font-size:18px;font-weight:600;line-height:1.35;margin:0;text-wrap:balance}
+.steps{display:grid;gap:8px;margin:0}
+.step{display:grid;grid-template-columns:64px 1fr;gap:10px;align-items:start}
+.step b{font-size:11.5px;text-transform:uppercase;letter-spacing:.07em;padding-top:3px}
+.step.do b{color:var(--good)} .step.dont b{color:var(--bad)} .step.stop b{color:var(--warn)}
+.trade{border:1px solid var(--line);border-radius:6px;padding:10px 12px;display:grid;gap:6px;background:var(--bg)}
+.trade .name{font-weight:600} .trade .legs{display:grid;gap:3px} .trade .legs div{font-family:var(--mono);font-size:13px;white-space:pre-wrap}
+.trade .m{display:grid;gap:3px;font-size:13.5px}
+.simple ul{margin:0;padding-left:18px;display:grid;gap:6px;max-width:66ch}
+details{border:1px solid var(--line);border-radius:6px;background:var(--panel)}
+details>summary{cursor:pointer;padding:10px 14px;font-weight:600;font-size:14px;list-style:none;display:flex;justify-content:space-between}
+details>summary::after{content:"+";color:var(--muted)} details[open]>summary::after{content:"–"}
+details>.inner{padding:4px 14px 14px;display:grid;gap:18px;border-top:1px solid var(--line)}
+.gloss{display:grid;gap:6px;font-size:13px} .gloss div b{display:block}
+.desk{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--fg);border-radius:6px;padding:12px 14px;display:grid;gap:10px}
+.deskhead{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:baseline} .deskhead h2{margin:0}
+.stance{margin:0;font-size:17px;font-weight:600;line-height:1.35;text-wrap:balance}
+.desk ul{margin:0;padding-left:18px;display:grid;gap:6px;max-width:68ch} .desk li::marker{color:var(--faint)}
+.plan{margin:0;display:grid;grid-template-columns:max-content 1fr;gap:5px 12px;font-size:14px;border-top:1px solid var(--line);padding-top:10px}
+.plan dt{font-size:11.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);padding-top:2px} .plan dd{margin:0;min-width:0}
+@media (max-width:480px){.plan{grid-template-columns:1fr;gap:2px 0} .plan dd{margin-bottom:6px}}
+.risk{margin:0;color:var(--muted);border-top:1px solid var(--line);padding-top:8px}
+.calls{display:grid;gap:8px}
+.call{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:10px 12px;display:grid;gap:4px;font-size:13.5px}
+.call .top{display:flex;gap:8px;align-items:center;flex-wrap:wrap} .call .top .when{color:var(--muted);font-size:12.5px;margin-left:auto}
+.call .what{font-weight:600} .call .why,.call .out{color:var(--muted);font-size:13px} .call .out b{color:var(--fg);font-weight:500}
+.pill{display:inline-block;padding:1px 8px;border-radius:999px;font-size:11.5px;font-weight:600;border:1px solid var(--line)}
+.pill.right{background:var(--pe-soft);color:var(--pe)} .pill.wrong{background:var(--ce-soft);color:var(--ce)} .pill.open{color:var(--muted)}
+.read{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:12px 14px}
+.read ul{margin:0;padding-left:18px;display:grid;gap:5px}
+.read li::marker{color:var(--faint)}
+
+.levels{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:480px){.levels{grid-template-columns:1fr}}
+.lv{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:10px 12px}
+.lv h2{margin-bottom:6px}
+.lv h2.ce{color:var(--ce)} .lv h2.pe{color:var(--pe)}
+.lv table{width:100%;border-collapse:collapse;font-size:13.5px}
+.lv td{padding:3px 0;border-top:1px solid var(--line)} .lv tr:first-child td{border-top:0}
+.lv td:first-child{font-weight:600} .lv td:nth-child(2),.lv td:nth-child(3){text-align:right;color:var(--muted)}
+
+.tabs{display:flex;gap:6px;flex-wrap:wrap}
+.tab{border:1px solid var(--line);background:var(--panel);color:var(--muted);border-radius:999px;padding:4px 12px;font:inherit;font-size:13px;cursor:pointer}
+.tab[aria-selected="true"]{color:var(--fg);border-color:var(--fg);font-weight:600}
+.symtabs .tab{font-size:14px;padding:6px 16px}
+.tab:focus-visible{outline:2px solid var(--pe);outline-offset:2px}
+
+.chart{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:12px 12px 6px;min-width:0}
+.chart svg{width:100%;height:auto;display:block}
+.legend{display:flex;gap:14px;font-size:12.5px;color:var(--muted);margin-bottom:6px;flex-wrap:wrap}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+.tip{position:fixed;pointer-events:none;background:var(--fg);color:var(--bg);font-size:12px;padding:6px 8px;border-radius:4px;z-index:5;white-space:nowrap}
+
+.chainwrap{overflow-x:auto;background:var(--panel);border:1px solid var(--line);border-radius:6px}
+table.chain{border-collapse:collapse;width:100%;min-width:640px;font-size:12.5px}
+.chain th{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600;padding:8px 6px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+.chain td{padding:5px 6px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+.chain th.k,.chain td.k{text-align:center;font-weight:600;background:var(--bg)}
+.chain tr.atm td.k{outline:2px solid var(--spot);outline-offset:-2px}
+.chain td.b{font-size:11px;text-align:left;color:var(--muted)}
+.chain td.b.w{color:var(--fg)}
+.chain .ceh{color:var(--ce)} .chain .peh{color:var(--pe)}
+.chain td.itm{background:color-mix(in srgb,var(--bg) 60%,transparent)}
+
+.hist{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
+footer{font-size:12px;color:var(--muted);border-top:1px solid var(--line);padding-top:10px;line-height:1.5}
+@media (prefers-reduced-motion:no-preference){.tab{transition:border-color .15s}}
+</style>
+
+<div class="wrap">
+  <header>
+    <div><h1>Nifty Options Desk</h1><div class="status"><span class="dot" id="dot"></span><span id="status"></span></div></div>
+    <div class="small muted">Data: NSE option chain · stamp <span class="num" id="stamp"></span> · <span id="age"></span></div>
+  </header>
+
+  <div class="tabs symtabs" role="tablist" id="symtabs"></div>
+
+  <section class="simple" id="simple" hidden>
+    <div class="light" id="light"><i></i><span id="lightLabel"></span><span class="small muted" style="font-weight:400;margin-left:auto">for <span id="simpleFor"></span></span></div>
+    <p class="headline" id="simpleHeadline"></p>
+    <div class="steps">
+      <div class="step do"><b>Do</b><span id="simpleDo"></span></div>
+      <div class="step dont"><b>Don't</b><span id="simpleDont"></span></div>
+      <div class="step stop"><b>Stop if</b><span id="simpleStop"></span></div>
+    </div>
+    <div class="trade" id="trade"></div>
+    <div><h2>Why</h2><ul id="simpleWhy"></ul></div>
+    <p class="risk small" id="simpleRisk"></p>
+    <details><summary>What these words mean</summary><div class="inner gloss" id="gloss"></div></details>
+  </section>
+
+  <section class="strip" id="strip"></section>
+
+  <details id="tech"><summary>Show the technical view</summary><div class="inner">
+  <section class="strip" id="techStrip" style="margin-top:14px"></section>
+  <section class="desk" id="desk" hidden>
+    <div class="deskhead"><h2>Analyst notes · <span id="deskFor"></span></h2><span class="small muted">written <span class="num" id="deskWritten"></span></span></div>
+    <p class="stance" id="deskStance"></p>
+    <ul id="deskLines"></ul>
+    <dl class="plan" id="deskPlan"></dl>
+    <p class="risk small" id="deskRisk"></p>
+  </section>
+
+  <section class="read">
+    <h2>Rule-based read <span class="bias" id="bias"></span></h2>
+    <ul id="notes"></ul>
+  </section>
+
+  <div class="tabs" role="tablist" id="tabs"></div>
+
+  <section class="levels" id="levels"></section>
+
+  <section class="chart">
+    <h2>Open interest by strike</h2>
+    <div class="legend"><span><i style="background:var(--pe)"></i>Puts (support)</span><span><i style="background:var(--ce)"></i>Calls (resistance)</span><span>│ spot</span></div>
+    <div id="oiChart"></div>
+  </section>
+
+  <section class="chart">
+    <h2>Change in OI today</h2>
+    <div class="legend"><span><i style="background:var(--pe)"></i>Puts</span><span><i style="background:var(--ce)"></i>Calls</span><span class="muted">faded = OI reduced (unwinding)</span></div>
+    <div id="chgChart"></div>
+  </section>
+
+  <section>
+    <h2>Chain around spot</h2>
+    <div class="chainwrap"><table class="chain" id="chain"></table></div>
+    <div class="small muted" style="margin-top:6px">Writing = OI up, premium down (sellers adding). Buying = OI up, premium up. Bold labels mark the heavier side at that strike.</div>
+  </section>
+
+  <section id="histSec" hidden>
+    <h2>Today so far</h2>
+    <div class="hist" id="hist"></div>
+  </section>
+
+  </div></details>
+
+  <section id="logSec" hidden>
+    <h2>Track record <span class="small muted" id="logStat" style="text-transform:none;letter-spacing:0"></span></h2>
+    <div class="calls" id="log"></div>
+  </section>
+
+  <footer>
+    Refreshes about every 30 minutes during market hours when the tracker is running. Figures are NSE's published open interest, not a forecast; the bias is a rule-based heuristic.
+    SEBI's FY22–FY24 study found 93% of individual F&O traders lost money. Size positions accordingly. Not investment advice.
+  </footer>
+</div>
+<div class="tip" id="tip" hidden></div>
+
+<script>
+/*DATA-START*/
+const DATA = {"fetchedAt":"2026-11-16T05:53:28.000Z","nifty":{"last":25220.75,"chg":0.3,"open":25206.15,"high":25337.6,"low":25190.25,"prevClose":25144.3},"vix":{"last":15.5,"chg":0.04},"fut":null,"market":{"status":"Open","msg":"Normal Market is Open","tradeDate":"16-Nov-2026 11:22"},"bias":"Neutral","notes":["PCR 0.88 \u2014 balanced positioning","Spot sits close to max pain 25200","Option writers' range: 25200 (put wall) to 25300 (call wall); straddle implies \u00b1166 pts by 17-Nov-2026"],"chains":[{"expiry":"17-Nov-2026","ts":"16-Nov-2026 11:22:28","spot":25220.75,"atm":25200,"pcr":0.88,"pcrNear":0.81,"totCE":4204982,"totPE":3714933,"addCE":1195845,"addPE":1183607,"maxPain":25200,"resistance":[{"k":25300,"oi":326642,"chg":210919,"ltp":65.8},{"k":26000,"oi":282735,"chg":56011,"ltp":2.4},{"k":25500,"oi":249483,"chg":89589,"ltp":19.55}],"support":[{"k":25200,"oi":326789,"chg":253847,"ltp":83.35},{"k":25000,"oi":250390,"chg":131882,"ltp":26.75},{"k":25100,"oi":191815,"chg":83989,"ltp":47.9}],"ceAdds":[{"k":25300,"oi":326642,"chg":210919,"ltp":65.8},{"k":25250,"oi":230971,"chg":167788,"ltp":86.55},{"k":25350,"oi":193380,"chg":118655,"ltp":49.35}],"peAdds":[{"k":25200,"oi":326789,"chg":253847,"ltp":83.35},{"k":25250,"oi":164491,"chg":148316,"ltp":107.75},{"k":25000,"oi":250390,"chg":131882,"ltp":26.75}],"atmIV":{"ce":18.66,"pe":18.36},"straddle":195.6,"expMove":166.26,"rows":[{"k":24800,"ce":{"oi":9442,"chg":-1031,"iv":21.91,"ltp":436,"b":"Short covering"},"pe":{"oi":127202,"chg":28929,"iv":21.76,"ltp":8.45,"b":"Writing"}},{"k":24850,"ce":{"oi":1708,"chg":-439,"iv":21.34,"ltp":390.7,"b":"Short covering"},"pe":{"oi":62147,"chg":20572,"iv":21.15,"ltp":11,"b":"Writing"}},{"k":24900,"ce":{"oi":9587,"chg":-1083,"iv":20.75,"ltp":344.65,"b":"Short covering"},"pe":{"oi":123418,"chg":55008,"iv":20.44,"ltp":14.65,"b":"Writing"}},{"k":24950,"ce":{"oi":2804,"chg":-507,"iv":19.78,"ltp":299.1,"b":"Short covering"},"pe":{"oi":60244,"chg":25127,"iv":20.08,"ltp":19.65,"b":"Writing"}},{"k":25000,"ce":{"oi":34403,"chg":-6224,"iv":19.26,"ltp":255.65,"b":"Short covering"},"pe":{"oi":250390,"chg":131882,"iv":19.71,"ltp":26.75,"b":"Writing"}},{"k":25050,"ce":{"oi":12898,"chg":-3726,"iv":19.01,"ltp":214.5,"b":"Short covering"},"pe":{"oi":85434,"chg":44880,"iv":19.25,"ltp":35.65,"b":"Writing"}},{"k":25100,"ce":{"oi":51194,"chg":-14959,"iv":18.68,"ltp":176.85,"b":"Short covering"},"pe":{"oi":191815,"chg":83989,"iv":18.96,"ltp":47.9,"b":"Writing"}},{"k":25150,"ce":{"oi":49419,"chg":-1786,"iv":18.64,"ltp":142.75,"b":"Short covering"},"pe":{"oi":111270,"chg":63940,"iv":18.67,"ltp":63.65,"b":"Writing"}},{"k":25200,"ce":{"oi":232293,"chg":106859,"iv":18.66,"ltp":112.25,"b":"Writing"},"pe":{"oi":326789,"chg":253847,"iv":18.36,"ltp":83.35,"b":"Writing"}},{"k":25250,"ce":{"oi":230971,"chg":167788,"iv":18.49,"ltp":86.55,"b":"Writing"},"pe":{"oi":164491,"chg":148316,"iv":18.3,"ltp":107.75,"b":"Writing"}},{"k":25300,"ce":{"oi":326642,"chg":210919,"iv":18.44,"ltp":65.8,"b":"Writing"},"pe":{"oi":145256,"chg":111896,"iv":18.71,"ltp":137.3,"b":"Writing"}},{"k":25350,"ce":{"oi":193380,"chg":118655,"iv":18.77,"ltp":49.35,"b":"Writing"},"pe":{"oi":37466,"chg":22349,"iv":18.4,"ltp":170.6,"b":"Writing"}},{"k":25400,"ce":{"oi":207439,"chg":80180,"iv":18.87,"ltp":36.3,"b":"Writing"},"pe":{"oi":42415,"chg":22989,"iv":19.18,"ltp":208.3,"b":"Writing"}},{"k":25450,"ce":{"oi":103577,"chg":55005,"iv":19.18,"ltp":26.6,"b":"Writing"},"pe":{"oi":7101,"chg":3946,"iv":19.62,"ltp":247.5,"b":"Writing"}},{"k":25500,"ce":{"oi":249483,"chg":89589,"iv":19.6,"ltp":19.55,"b":"Writing"},"pe":{"oi":19411,"chg":-3749,"iv":19.93,"ltp":291.55,"b":"Long unwinding"}},{"k":25550,"ce":{"oi":96038,"chg":40165,"iv":19.96,"ltp":14,"b":"Writing"},"pe":{"oi":2499,"chg":1466,"iv":19.8,"ltp":334.65,"b":"Writing"}},{"k":25600,"ce":{"oi":141635,"chg":59355,"iv":20.39,"ltp":10.2,"b":"Writing"},"pe":{"oi":4145,"chg":1161,"iv":20.96,"ltp":381.55,"b":"Writing"}}]},{"expiry":"23-Nov-2026","ts":"16-Nov-2026 11:22:22","spot":25219.05,"atm":25200,"pcr":1.12,"pcrNear":0.89,"totCE":1308974,"totPE":1463638,"addCE":68976,"addPE":85915,"maxPain":24650,"resistance":[{"k":26000,"oi":145956,"chg":12118,"ltp":24.95},{"k":25500,"oi":73259,"chg":3681,"ltp":108.1},{"k":26500,"oi":62875,"chg":10475,"ltp":7.5}],"support":[{"k":25000,"oi":117179,"chg":13253,"ltp":109.8},{"k":23000,"oi":106169,"chg":2793,"ltp":3.65},{"k":24000,"oi":93597,"chg":4110,"ltp":7.8}],"ceAdds":[{"k":25300,"oi":46280,"chg":15406,"ltp":184.25},{"k":26000,"oi":145956,"chg":12118,"ltp":24.95},{"k":25200,"oi":48104,"chg":7494,"ltp":233.45}],"peAdds":[{"k":25300,"oi":43877,"chg":18775,"ltp":235},{"k":25200,"oi":42963,"chg":14879,"ltp":185.7},{"k":25000,"oi":117179,"chg":13253,"ltp":109.8}],"atmIV":{"ce":14.74,"pe":15.23},"straddle":419.15,"expMove":356.28,"rows":[{"k":24800,"ce":{"oi":7855,"chg":-53,"iv":15.1,"ltp":506.2,"b":"Short covering"},"pe":{"oi":31063,"chg":4911,"iv":15.75,"ltp":63,"b":"Writing"}},{"k":24850,"ce":{"oi":2079,"chg":-18,"iv":15.74,"ltp":473.25,"b":"Short covering"},"pe":{"oi":5053,"chg":672,"iv":15.65,"ltp":72.15,"b":"Writing"}},{"k":24900,"ce":{"oi":12331,"chg":-67,"iv":15.65,"ltp":428.95,"b":"Short covering"},"pe":{"oi":22724,"chg":1928,"iv":15.55,"ltp":83.05,"b":"Writing"}},{"k":24950,"ce":{"oi":1076,"chg":-22,"iv":14.77,"ltp":392.45,"b":"Short covering"},"pe":{"oi":5279,"chg":2393,"iv":15.38,"ltp":95.55,"b":"Writing"}},{"k":25000,"ce":{"oi":57866,"chg":1355,"iv":14.79,"ltp":355.15,"b":"Buying"},"pe":{"oi":117179,"chg":13253,"iv":15.38,"ltp":109.8,"b":"Writing"}},{"k":25050,"ce":{"oi":1405,"chg":-231,"iv":14.91,"ltp":323.35,"b":"Short covering"},"pe":{"oi":3126,"chg":690,"iv":15.23,"ltp":127,"b":"Writing"}},{"k":25100,"ce":{"oi":19599,"chg":-1970,"iv":14.77,"ltp":290.1,"b":"Short covering"},"pe":{"oi":27623,"chg":537,"iv":15.18,"ltp":145,"b":"Writing"}},{"k":25150,"ce":{"oi":4444,"chg":-1495,"iv":14.77,"ltp":260.8,"b":"Short covering"},"pe":{"oi":5531,"chg":475,"iv":15.23,"ltp":163.95,"b":"Writing"}},{"k":25200,"ce":{"oi":48104,"chg":7494,"iv":14.74,"ltp":233.45,"b":"Buying"},"pe":{"oi":42963,"chg":14879,"iv":15.23,"ltp":185.7,"b":"Writing"}},{"k":25250,"ce":{"oi":10206,"chg":4410,"iv":14.79,"ltp":207.8,"b":"Buying"},"pe":{"oi":7234,"chg":3934,"iv":15.19,"ltp":209.6,"b":"Writing"}},{"k":25300,"ce":{"oi":46280,"chg":15406,"iv":14.77,"ltp":184.25,"b":"Buying"},"pe":{"oi":43877,"chg":18775,"iv":15.21,"ltp":235,"b":"Writing"}},{"k":25350,"ce":{"oi":9881,"chg":5462,"iv":14.76,"ltp":160.8,"b":"Buying"},"pe":{"oi":13918,"chg":12503,"iv":15.13,"ltp":262.75,"b":"Writing"}},{"k":25400,"ce":{"oi":24968,"chg":1475,"iv":14.84,"ltp":141.9,"b":"Buying"},"pe":{"oi":14963,"chg":3620,"iv":15.24,"ltp":295.85,"b":"Writing"}},{"k":25450,"ce":{"oi":5554,"chg":411,"iv":14.85,"ltp":124.15,"b":"Buying"},"pe":{"oi":1080,"chg":337,"iv":15.34,"ltp":326,"b":"Writing"}},{"k":25500,"ce":{"oi":73259,"chg":3681,"iv":14.9,"ltp":108.1,"b":"Buying"},"pe":{"oi":31838,"chg":723,"iv":15.37,"ltp":359,"b":"Writing"}},{"k":25550,"ce":{"oi":5332,"chg":1156,"iv":14.98,"ltp":93.95,"b":"Writing"},"pe":{"oi":421,"chg":37,"iv":15.41,"ltp":395.15,"b":"Writing"}},{"k":25600,"ce":{"oi":21414,"chg":1463,"iv":14.98,"ltp":81.5,"b":"Writing"},"pe":{"oi":3518,"chg":-3,"iv":15.47,"ltp":431.75,"b":"Long unwinding"}}]}],"bank":{"nifty":{"last":61430.2,"chg":0.65,"open":61225.65,"high":61712.8,"low":61213.2,"prevClose":61034.1},"vix":{"last":15.5,"chg":0.04},"fut":null,"market":{"status":"Open","msg":"Normal Market is Open","tradeDate":"16-Nov-2026 11:22"},"bias":"Bullish","notes":["PCR 1.22 \u2014 put writers dominant, dips are being sold into","Fresh put writing (0.3L) outpaces call writing (0.1L) near spot","Spot is 2423 pts above max pain 59000 \u2014 gravity toward expiry is downward","Option writers' range: 60500 (put wall) to 62000 (call wall); straddle implies \u00b1954 pts by 23-Nov-2026"],"chains":[{"expiry":"23-Nov-2026","ts":"16-Nov-2026 11:22:12","spot":61423.45,"atm":61400,"pcr":1.22,"pcrNear":0.83,"totCE":554899,"totPE":676060,"addCE":13692,"addPE":30546,"maxPain":59000,"resistance":[{"k":62000,"oi":28317,"chg":1744,"ltp":302},{"k":63000,"oi":23266,"chg":4090,"ltp":95},{"k":65000,"oi":21147,"chg":1162,"ltp":14.6}],"support":[{"k":60500,"oi":40471,"chg":-767,"ltp":238.6},{"k":57000,"oi":39032,"chg":-1619,"ltp":15.25},{"k":58000,"oi":38633,"chg":-1384,"ltp":24.5}],"ceAdds":[{"k":63000,"oi":23266,"chg":4090,"ltp":95},{"k":61700,"oi":6349,"chg":3487,"ltp":410.15},{"k":61400,"oi":7708,"chg":3144,"ltp":544.3}],"peAdds":[{"k":61300,"oi":7611,"chg":4678,"ltp":527.15},{"k":61000,"oi":30427,"chg":4286,"ltp":398.5},{"k":61500,"oi":10085,"chg":4090,"ltp":630}],"atmIV":{"ce":14.31,"pe":18.93},"straddle":1122.3,"expMove":953.95,"rows":[{"k":60400,"ce":{"oi":726,"chg":-117,"iv":12.88,"ltp":1185.8,"b":"Short covering"},"pe":{"oi":3799,"chg":1087,"iv":18.53,"ltp":216.45,"b":"Writing"}},{"k":60500,"ce":{"oi":17596,"chg":-8342,"iv":12.24,"ltp":1102,"b":"Short covering"},"pe":{"oi":40471,"chg":-767,"iv":18.48,"ltp":238.6,"b":"Long unwinding"}},{"k":60600,"ce":{"oi":1070,"chg":-130,"iv":13.4,"ltp":1036,"b":"Short covering"},"pe":{"oi":3250,"chg":381,"iv":18.43,"ltp":267.35,"b":"Writing"}},{"k":60700,"ce":{"oi":1641,"chg":-167,"iv":12.74,"ltp":958.75,"b":"Short covering"},"pe":{"oi":3625,"chg":44,"iv":18.37,"ltp":295.55,"b":"Writing"}},{"k":60800,"ce":{"oi":2332,"chg":-1050,"iv":13.15,"ltp":890.65,"b":"Short covering"},"pe":{"oi":5117,"chg":-408,"iv":18.47,"ltp":327,"b":"Long unwinding"}},{"k":60900,"ce":{"oi":2606,"chg":-1359,"iv":13.46,"ltp":821.7,"b":"Short covering"},"pe":{"oi":4376,"chg":-201,"iv":18.53,"ltp":360.05,"b":"Long unwinding"}},{"k":61000,"ce":{"oi":25555,"chg":-3378,"iv":13.64,"ltp":762.75,"b":"Short covering"},"pe":{"oi":30427,"chg":4286,"iv":18.58,"ltp":398.5,"b":"Writing"}},{"k":61100,"ce":{"oi":2444,"chg":-2200,"iv":13.85,"ltp":700.65,"b":"Short covering"},"pe":{"oi":2879,"chg":851,"iv":18.66,"ltp":439.4,"b":"Writing"}},{"k":61200,"ce":{"oi":4338,"chg":-1168,"iv":14.09,"ltp":643.8,"b":"Short covering"},"pe":{"oi":4882,"chg":2308,"iv":18.68,"ltp":482,"b":"Writing"}},{"k":61300,"ce":{"oi":9482,"chg":2596,"iv":14.13,"ltp":592.45,"b":"Buying"},"pe":{"oi":7611,"chg":4678,"iv":18.81,"ltp":527.15,"b":"Writing"}},{"k":61400,"ce":{"oi":7708,"chg":3144,"iv":14.31,"ltp":544.3,"b":"Buying"},"pe":{"oi":4591,"chg":3037,"iv":18.93,"ltp":578,"b":"Writing"}},{"k":61500,"ce":{"oi":19488,"chg":3109,"iv":14.4,"ltp":497.45,"b":"Buying"},"pe":{"oi":10085,"chg":4090,"iv":18.98,"ltp":630,"b":"Writing"}},{"k":61600,"ce":{"oi":6026,"chg":3097,"iv":14.56,"ltp":451.6,"b":"Buying"},"pe":{"oi":2177,"chg":1775,"iv":19.14,"ltp":688.4,"b":"Writing"}},{"k":61700,"ce":{"oi":6349,"chg":3487,"iv":14.64,"ltp":410.15,"b":"Buying"},"pe":{"oi":1368,"chg":1093,"iv":19.15,"ltp":741.45,"b":"Writing"}},{"k":61800,"ce":{"oi":4023,"chg":1182,"iv":14.77,"ltp":372.4,"b":"Buying"},"pe":{"oi":1957,"chg":1241,"iv":19.36,"ltp":809.15,"b":"Writing"}},{"k":61900,"ce":{"oi":3525,"chg":414,"iv":14.8,"ltp":335.35,"b":"Buying"},"pe":{"oi":241,"chg":149,"iv":19.56,"ltp":885.65,"b":"Writing"}},{"k":62000,"ce":{"oi":28317,"chg":1744,"iv":14.98,"ltp":302,"b":"Buying"},"pe":{"oi":7526,"chg":1689,"iv":19.76,"ltp":935.5,"b":"Writing"}},{"k":62100,"ce":{"oi":2539,"chg":1132,"iv":14.99,"ltp":271.1,"b":"Buying"},"pe":{"oi":734,"chg":698,"iv":18.86,"ltp":987.8,"b":"Writing"}},{"k":62200,"ce":{"oi":3676,"chg":910,"iv":15.12,"ltp":241.65,"b":"Buying"},"pe":{"oi":70,"chg":43,"iv":19.3,"ltp":1067.55,"b":"Writing"}},{"k":62300,"ce":{"oi":2887,"chg":1244,"iv":15.21,"ltp":216.65,"b":"Buying"},"pe":{"oi":119,"chg":80,"iv":19.99,"ltp":1156.35,"b":"Writing"}},{"k":62400,"ce":{"oi":1838,"chg":568,"iv":15.24,"ltp":193.4,"b":"Buying"},"pe":{"oi":87,"chg":17,"iv":19.12,"ltp":1200,"b":"Writing"}}]},{"expiry":"29-Dec-2026","ts":"16-Nov-2026 11:22:15","spot":61423.45,"atm":61400,"pcr":1.01,"pcrNear":0.6,"totCE":111850,"totPE":113517,"addCE":1941,"addPE":4599,"maxPain":59600,"resistance":[{"k":62000,"oi":17839,"chg":184,"ltp":1028.45},{"k":65000,"oi":14478,"chg":8843,"ltp":183},{"k":63000,"oi":7167,"chg":47,"ltp":632}],"support":[{"k":57000,"oi":8621,"chg":-1,"ltp":158.35},{"k":58000,"oi":8472,"chg":-47,"ltp":242.2},{"k":59000,"oi":7484,"chg":-12,"ltp":373.55}],"ceAdds":[{"k":61500,"oi":3946,"chg":712,"ltp":1301.3},{"k":61000,"oi":6087,"chg":522,"ltp":1605.9},{"k":63500,"oi":880,"chg":223,"ltp":477.7}],"peAdds":[{"k":61000,"oi":6560,"chg":928,"ltp":888},{"k":61500,"oi":3013,"chg":736,"ltp":1085.4},{"k":62000,"oi":3888,"chg":661,"ltp":1314}],"atmIV":{"ce":13.12,"pe":15.13},"straddle":2390.2,"expMove":2031.67,"rows":[{"k":60400,"ce":{"oi":46,"chg":1,"iv":12.07,"ltp":1908.95,"b":"Buying"},"pe":{"oi":144,"chg":35,"iv":15.48,"ltp":680.85,"b":"Writing"}},{"k":60500,"ce":{"oi":1225,"chg":81,"iv":13.26,"ltp":1910.3,"b":"Buying"},"pe":{"oi":1686,"chg":383,"iv":15.7,"ltp":725.75,"b":"Writing"}},{"k":60600,"ce":{"oi":110,"chg":-8,"iv":12.57,"ltp":1806.55,"b":"Short covering"},"pe":{"oi":145,"chg":39,"iv":15.36,"ltp":740,"b":"Writing"}},{"k":60700,"ce":{"oi":121,"chg":-4,"iv":13.3,"ltp":1795.6,"b":"Short covering"},"pe":{"oi":201,"chg":28,"iv":15.49,"ltp":785.65,"b":"Writing"}},{"k":60800,"ce":{"oi":170,"chg":-74,"iv":12.89,"ltp":1699,"b":"Short covering"},"pe":{"oi":253,"chg":59,"iv":15.52,"ltp":822.3,"b":"Writing"}},{"k":60900,"ce":{"oi":219,"chg":-8,"iv":13.63,"ltp":1693.75,"b":"Short covering"},"pe":{"oi":271,"chg":17,"iv":15.46,"ltp":858.65,"b":"Writing"}},{"k":61000,"ce":{"oi":6087,"chg":522,"iv":13.3,"ltp":1605.9,"b":"Buying"},"pe":{"oi":6560,"chg":928,"iv":15.45,"ltp":888,"b":"Writing"}},{"k":61100,"ce":{"oi":131,"chg":9,"iv":13.14,"ltp":1533,"b":"Buying"},"pe":{"oi":313,"chg":78,"iv":15.34,"ltp":928.45,"b":"Writing"}},{"k":61200,"ce":{"oi":347,"chg":-4,"iv":13.04,"ltp":1473.95,"b":"Short covering"},"pe":{"oi":408,"chg":50,"iv":15.22,"ltp":961.1,"b":"Writing"}},{"k":61300,"ce":{"oi":514,"chg":-25,"iv":12.9,"ltp":1396,"b":"Short covering"},"pe":{"oi":525,"chg":168,"iv":15.24,"ltp":1005.25,"b":"Writing"}},{"k":61400,"ce":{"oi":285,"chg":105,"iv":13.12,"ltp":1350,"b":"Buying"},"pe":{"oi":300,"chg":60,"iv":15.13,"ltp":1040.2,"b":"Writing"}},{"k":61500,"ce":{"oi":3946,"chg":712,"iv":12.9,"ltp":1301.3,"b":"Buying"},"pe":{"oi":3013,"chg":736,"iv":15.06,"ltp":1085.4,"b":"Writing"}},{"k":61600,"ce":{"oi":272,"chg":102,"iv":12.95,"ltp":1236.5,"b":"Buying"},"pe":{"oi":237,"chg":50,"iv":15.11,"ltp":1124.45,"b":"Writing"}},{"k":61700,"ce":{"oi":356,"chg":80,"iv":13.26,"ltp":1175.05,"b":"Buying"},"pe":{"oi":318,"chg":58,"iv":15.05,"ltp":1173.25,"b":"Writing"}},{"k":61800,"ce":{"oi":369,"chg":72,"iv":12.95,"ltp":1131.85,"b":"Buying"},"pe":{"oi":311,"chg":77,"iv":14.98,"ltp":1215.75,"b":"Writing"}},{"k":61900,"ce":{"oi":296,"chg":63,"iv":12.7,"ltp":1061.75,"b":"Buying"},"pe":{"oi":222,"chg":67,"iv":15.07,"ltp":1273.45,"b":"Writing"}},{"k":62000,"ce":{"oi":17839,"chg":184,"iv":12.83,"ltp":1028.45,"b":"Buying"},"pe":{"oi":3888,"chg":661,"iv":15.01,"ltp":1314,"b":"Writing"}},{"k":62100,"ce":{"oi":398,"chg":54,"iv":13.05,"ltp":997,"b":"Buying"},"pe":{"oi":221,"chg":93,"iv":15.08,"ltp":1378.75,"b":"Writing"}},{"k":62200,"ce":{"oi":562,"chg":-47,"iv":13.03,"ltp":950,"b":"Short covering"},"pe":{"oi":148,"chg":56,"iv":14.92,"ltp":1419.15,"b":"Writing"}},{"k":62300,"ce":{"oi":213,"chg":85,"iv":12.83,"ltp":889.95,"b":"Buying"},"pe":{"oi":146,"chg":75,"iv":14.94,"ltp":1476.05,"b":"Writing"}},{"k":62400,"ce":{"oi":230,"chg":-56,"iv":12.85,"ltp":850,"b":"Short covering"},"pe":{"oi":115,"chg":59,"iv":14.41,"ltp":1488.3,"b":"Writing"}}]}]}};
+const HISTORY = {"nifty": [{"t": "11:10", "spot": 25220.95, "pcr": 0.88, "vix": 15.48, "maxPain": 25200}, {"t": "11:22", "spot": 25220.75, "pcr": 0.88, "vix": 15.5, "maxPain": 25200}], "bank": [{"t": "11:10", "spot": 61378.75, "pcr": 1.22, "vix": 15.48, "maxPain": 59000}, {"t": "11:22", "spot": 61423.45, "pcr": 1.22, "vix": 15.5, "maxPain": 59000}]};
+const DESK = {"current":{"written":"16-Nov-2026 11:10","for":"Rest of Monday 16-Nov-2026 (17-Nov weekly expiry is Tuesday)","stance":"Rest of Monday: 25,100–25,350 pin, no lean; buy 25,150–25,200 after a 15-min hold, sell a 15-min stall at 25,300–25,340.","lines":["Floor lifts to 25,100: 25,200 PE added 235K to 308K this morning while near-spot calls and puts added almost equally (11.9L vs 11.4L). Friday's sell-the-bounce stays; the 24,980–25,050 buy zone moves up to 25,150–25,200.","Ceiling: 25,300 CE 327K (+211K) is the wall, 25,250 CE 220K (+156K) and 25,350 CE 189K (+114K) stack behind it; the 25,338 high stalled under them. 25,500 CE 249K (+90K), 26,000 CE 285K far.","Floor: 25,200 PE 308K (+235K) sits at the money, 25,100 PE 187K (+79K) and 25,000 PE 243K (+124K) under it. 25,000 and 25,100 CE writers covered 22K, so the open above 25,200 was bought.","Flow: PCR 0.88 from 0.83, near-spot 0.80. Max pain moved up to 25,200 from 25,100; spot sits 21 above it, so Tuesday's pin is 25,200–25,300. VIX 15.48, flat into expiry.","23-Nov futures 25,270, up 0.02% against cash +0.31%: 49-point premium, futures not confirming the bounce. 23-Nov chain: PCR 1.12, max pain 24,600, 25,300 written both sides (CE +15K, PE +19K), 26,000 CE 145K.","Pricing: 25,200 straddle 196 → ±166 by Tuesday's close. ATM IV 19.2 call vs 17.9 put: calls dearer by 1.3 vols, flipped from Friday's put premium, so upside is what is being paid for."],"plan":[{"label":"Buy zone","text":"25,150–25,200 against 25,200 PE 308K and 25,100 PE 187K, after a 15-min hold above 25,150. Stop on a 15-min close under 25,100. Target 25,300."},{"label":"Sell zone","text":"25,300–25,340 under 25,300 CE 327K and 25,350 CE 189K, after a 15-min stall. Cover 25,210; stop on a 15-min close above 25,380."},{"label":"Target","text":"Longs from 25,180 → 25,300, half off at 25,250. Shorts from 25,320 → 25,210. Square day trades by 15:25."},{"label":"Invalidation","text":"15-min close below 25,100 → no longs; 25,000 PE 243K is the next floor. Above 25,380 → no shorts; 25,500 CE 249K next."},{"label":"Structure","text":"17-Nov iron condor: sell 25,350 CE (≈49) / buy 25,450 CE (≈27); sell 25,100 PE (≈48) / buy 25,000 PE (≈27). Credit ≈44, risk ≈56, breakevens 25,056–25,394. Enter inside 25,180–25,320."},{"label":"Avoid","text":"Buying above 25,320 or shorting below 25,180, the middle of a 250-point box. Buying 17-Nov 25,500 CE (20) or 25,000 PE (27) as lottery tickets. No naked writes into expiry."}],"risk":"Expiry is tomorrow: premiums decay fast, but a gap through 25,100 or 25,380 voids the pin and hits the condor's maximum. Record 12 right, 8 wrong, 2 open. Paper only."},"calls":[{"id":1,"opened":"30-Oct 15:40","kind":"Rule-based","call":"Nifty likely to rise into Tuesday's expiry","trigger":"Far more traders were betting it won't fall than betting it will","invalidation":"—","status":"right","closed":"02-Nov 15:30","result":"Right: Nifty rose 388 points (23,053 → 23,441)"},{"id":2,"opened":"02-Nov 18:40","kind":"Desk view","call":"Nifty to stay between 23,250 and 23,650; buy a dip to 23,300","trigger":"Heavy bets placed that it won't fall below 23,200–23,300","invalidation":"15-min close below 23,200","status":"wrong","closed":"03-Nov 15:30","result":"Wrong: it never dipped (low 23,483) and broke above 23,650, closing at 23,811"},{"id":3,"opened":"03-Nov 09:16","kind":"Desk view","call":"Stay between 23,400 and 23,650; sell near the top, buy near 23,450","trigger":"Morning jump was being sold by traders betting against 23,600–23,650","invalidation":"15-min close below 23,380 or above 23,660","status":"wrong","closed":"03-Nov 11:46","result":"Wrong: it broke above 23,660 by 11:45; selling the top lost 52 points"},{"id":4,"opened":"03-Nov 11:11","kind":"Desk view","call":"Stay between 23,550 and 23,750; buy 23,600, sell 23,700","trigger":"Support rebuilt at 23,500–23,600; traders betting against 23,700–23,850","invalidation":"15-min close below 23,540 or above 23,760","status":"wrong","closed":"03-Nov 15:30","result":"Wrong: closed at 23,811, above the range; selling 23,712 lost 99 points"},{"id":5,"opened":"03-Nov 13:15","kind":"Desk view","call":"Finish the day between 23,650 and 23,775; buy 23,650, don't sell at 23,700","trigger":"Traders who had bet against a rise gave up; support moved up to 23,650–23,800","invalidation":"15-min close below 23,620 or above 23,775","status":"wrong","closed":"03-Nov 15:30","result":"Wrong on the range (closed 23,811), though the 23,660 buy made 50 points"},{"id":6,"opened":"03-Nov 15:17","kind":"Desk view","call":"Wednesday: stay between 23,550 and 23,950, leaning up while 23,650 holds; buy 23,620–23,660","trigger":"Next week's support built at 23,600–23,700; first big ceiling is 24,000","invalidation":"15-min close below 23,580 or above 24,020","status":"right","closed":"04-Nov 15:10","result":"Right: stayed 23,696–23,946 inside the box and leaned up (23,811 → 23,920); the 23,620–23,660 buy dip never came, no trade"},{"id":7,"opened":"04-Nov 11:16","kind":"Desk view","call":"Rest of Wednesday: stay between 23,700 and 23,950; buy near 23,730, sell near 23,920, no lean","trigger":"The morning jump to 23,946 was sold hard; big traders now bet it stays under 24,000 and above 23,600","invalidation":"15-min close below 23,680 or above 23,980","status":"right","closed":"04-Nov 15:10","result":"Right: box held; buying near 23,744 at 12:15 reached the 23,920 sell zone by 2:28 pm, +160 pts"},{"id":8,"opened":"04-Nov 13:45","kind":"Desk view","call":"Rest of Wednesday: stay between 23,780 and 24,000, leaning up; buy dips to 23,820–23,860, don't sell before 23,980","trigger":"Traders betting against 23,900 gave up, while new bets came in that it won't fall below 23,900","invalidation":"15-min close below 23,780 or above 24,040","status":"right","closed":"04-Nov 15:10","result":"Right: box held and it leaned up (23,900 → 23,920); the dip to 23,820–23,860 never came, no trade"},{"id":9,"opened":"04-Nov 14:16","kind":"Desk view","call":"Rest of Wednesday: stay between 23,780 and 23,980, no lean; buy near 23,800–23,830, sell near 23,940–23,960","trigger":"Traders betting it stays under 23,900 came back with 19,800 new contracts, so the 1:45 pm lean up is withdrawn","invalidation":"15-min close below 23,780 or above 23,990","status":"right","closed":"04-Nov 15:10","result":"Right: stayed 23,883–23,922 inside the box; neither edge was reached, no trade"},{"id":10,"opened":"04-Nov 15:10","kind":"Desk view","call":"Thursday: stay between 23,800 and 24,050, leaning up; buy a dip to 23,820–23,860, don't sell short before 24,030","trigger":"In the last half hour, traders betting it stays under 23,900 and 24,000 gave up on 38,000 contracts, while new bets came in that it won't fall below 23,900","invalidation":"15-min close below 23,780 or above 24,090","status":"wrong","closed":"05-Nov 09:30","result":"Wrong: gapped open at 24,378, straight through the 24,090 line, before any trade inside the box was possible (+426 pts, 23,961 → 24,387, all outside the box)"},{"id":11,"opened":"05-Nov 10:27","kind":"Desk view","call":"Rest of Thursday: stay between 24,300 and 24,500, leaning up; buy a dip to 24,310–24,350, don’t sell short before 24,480","trigger":"Nifty jumped 420 points at the open; traders betting it stays under 24,000 gave up 87,000 bets, while 122,000 new bets came in that it won’t fall below 24,300","invalidation":"15-min close below 24,270 or above 24,540","status":"wrong","closed":"05-Nov 14:15","result":"Wrong: broke above the 24,540 line by 2:15 pm (+165 pts, 24,387 → 24,552); the lean up was right but the box was not, and the 24,310–24,350 buy dip never came (lowest reading 24,363), no trade"},{"id":12,"opened":"05-Nov 13:17","kind":"Desk view","call":"Rest of Thursday: stay between 24,380 and 24,600, leaning up; buy a dip to 24,400–24,440, don’t sell short before 24,580","trigger":"Traders betting it stays under 24,500 gave up 11,000 bets since 12:46, while 67,000 new bets came in today that it won’t fall below 24,500","invalidation":"15-min close below 24,350 or above 24,640","status":"right","closed":"05-Nov 15:30","result":"Right: stayed inside the box (high 24,580) and leaned up (24,472 → 24,537, +65 pts); the 24,400–24,440 buy dip never came, no trade"},{"id":13,"opened":"05-Nov 13:46","kind":"Desk view","call":"Rest of Thursday: stay between 24,450 and 24,700, leaning up; buy a dip to 24,480–24,520, don’t sell short before 24,680","trigger":"Traders betting it stays under 25,000 gave up 77,000 bets in half an hour, while 51,000 new bets came in that it won’t fall below 24,500","invalidation":"15-min close below 24,440 or above 24,740","status":"right","closed":"05-Nov 15:30","result":"Right on the box (stayed 24,540–24,580), but the lean up fizzled (24,541 → 24,537, −4 pts); the 24,480–24,520 buy dip never came, no trade"},{"id":14,"opened":"05-Nov 14:45","kind":"Desk view","call":"Last 45 minutes of Thursday: stay between 24,470 and 24,640, no lean; buy only a dip to 24,480–24,520 before 3 pm, don’t sell short before 24,600","trigger":"In half an hour big traders pulled back 49,000 bets that it won’t fall below 24,300–24,600, while 20,000 new bets came in that it stays under 24,600–24,700, so the lean up is withdrawn","invalidation":"15-min close below 24,460 or above 24,650","status":"right","closed":"05-Nov 15:30","result":"Right: stayed inside the box and closed at 24,537 (−14 pts from 24,550); neither edge was reached, no trade"},{"id":15,"opened":"05-Nov 15:40","kind":"Desk view","call":"Friday: stay between 24,400 and 24,700, no lean; buy a dip to 24,420–24,480, don’t sell short before 24,650","trigger":"In the last half hour big traders pulled back 54,000 bets that it won’t fall below 24,350–24,500 and 11,000 bets that it stays under 24,600, so both edges are softer and there is no lean","invalidation":"15-min close below 24,380 or above 24,740","status":"wrong","closed":"06-Nov 15:30","result":"Wrong: broke above the 24,740 line and closed at 25,030 (+494 pts, 24,537 → 25,030); the 24,420–24,480 dip did come (low 24,388) and buying it would have made about 550 points, but the box was far too small"},{"id":16,"opened":"06-Nov 11:06","kind":"Desk view","call":"Rest of Friday: stay between 24,450 and 24,750, leaning up a little; buy a dip to 24,500–24,550, don’t sell short before 24,700","trigger":"Big traders placed 136,000 new bets today that it won’t fall below 24,500 and 105,000 that it won’t fall below 24,400, while 104,000 new bets that it stays under 24,700 stopped the morning rise at 24,703","invalidation":"15-min close below 24,450 or above 24,780","status":"wrong","closed":"06-Nov 15:30","result":"Wrong: broke above the 24,780 line and closed at 25,030 (+407 pts, 24,623 → 25,030); the lean up was right, the box was not, and our readings don't show whether the 24,500–24,550 dip came after 11:45"},{"id":17,"opened":"06-Nov 15:40","kind":"Desk view","call":"Monday: stay between 24,750 and 25,350, leaning up; buy a dip to 24,850–24,950, don't sell short before 25,300","trigger":"Nifty jumped 494 points to close at its high; big traders placed 87,000 new bets that it won't fall below 24,700, while those betting it stays under 24,800 gave up 210,000 bets","invalidation":"15-min close below 24,750 or above 25,400","status":"right","closed":"09-Nov 15:30","result":"Right: stayed inside the box (low 24,839, high 25,084) and closed at 25,045 (+14 pts, 25,030 → 25,045); the buy dip came, but it ended 255 points short of the 25,300 exit"},{"id":18,"opened":"09-Nov 15:40","kind":"Desk view","call":"Wednesday: stay between 24,800 and 25,350, leaning up; buy a dip to 24,850–24,950, don't sell short before 25,300","trigger":"Monday's dip to 24,839 was bought back to 25,045; big traders placed 55,000 new bets that it won't fall below 25,000 by 17 Nov","invalidation":"15-min close below 24,780 or above 25,400","status":"right","closed":"11-Nov 15:30","result":"Right: closed Wednesday at 25,255, inside the box and up (+210 pts, 25,045 → 25,255); no readings were taken during Wednesday, so this is judged on the close only"},{"id":19,"opened":"12-Nov 12:16","kind":"Desk view","call":"Rest of Thursday: stay between 25,050 and 25,400, no lean; buy a dip to 25,050–25,120, sell only near 25,350–25,400","trigger":"Wednesday closed at 25,255 inside the box; today big traders placed 105,000 new bets that it stays under 25,300–25,400 and 135,000 that it won't fall below 25,000–25,300, so it is pinned near 25,250","invalidation":"15-min close below 24,980 or above 25,420","status":"right","closed":"12-Nov 15:30","result":"Right: stayed inside the box (high 25,385) and closed at 25,299 (+88 pts, 25,212 → 25,299); the 25,050–25,120 buy dip never came, no trade"},{"id":20,"opened":"12-Nov 15:40","kind":"Desk view","call":"Friday: stay between 25,050 and 25,500, leaning up; buy a dip to 25,120–25,200, don't sell short before 25,450","trigger":"Nifty closed at 25,299, right on the 25,300 level; in the last half hour traders betting it stays under 25,300–25,500 gave up 52,000 bets, while 126,000 bets stand that it won't fall below 25,000","invalidation":"15-min close below 25,050 or above 25,520","status":"right","closed":"13-Nov 15:30","result":"Right on the box only (low 25,054, high 25,246): the lean up was wrong, it closed down 155 at 25,144 (25,299 → 25,144); the 25,120–25,200 dip buy ended about flat and 25,450 never came. No readings during Friday, judged on the close and daily range"},{"id":21,"opened":"13-Nov 15:40","kind":"Desk view","call":"Monday: stay between 24,950 and 25,350, no lean; sell a bounce to 25,250–25,320, buy only a dip to 24,980–25,050","trigger":"Nifty fell 155 to 25,144; big traders placed 373,000 new bets that it won't rise against 97,000 that it won't fall, with 84,000 of them at 25,200, so the lean up is withdrawn","invalidation":"15-min close below 24,950 or above 25,350","status":"open","closed":"","result":""},{"id":22,"opened":"16-Nov 11:10","kind":"Desk view","call":"Rest of Monday: stay between 25,100 and 25,350, no lean; buy a dip to 25,150–25,200, sell a stall at 25,300–25,340","trigger":"Big traders placed 235,000 new bets this morning that it won't fall below 25,200 and 211,000 that it stays under 25,300, so it is pinned between them into Tuesday's expiry","invalidation":"15-min close below 25,100 or above 25,380","status":"open","closed":"","result":""}],"lot":65,"simple":{"written":"16-Nov-2026 11:10","for":"Rest of Monday 16 Nov","light":"amber","lightLabel":"Range day: trade the edges","headline":"Nifty bounced 77 points to 25,227 and big traders have boxed it between 25,200 and 25,300 for Tuesday's expiry; trade the edges, don't chase.","do":"Place the four-leg trade below while Nifty is between 25,180 and 25,320 and has stayed there for 15 minutes; it pays if Nifty finishes Tuesday between 25,100 and 25,350.","dont":"Don't buy above 25,320 or sell short below 25,180; both are the middle of a box that is only 250 points wide.","stop":"If a 15-minute candle closes below 25,100 or above 25,380, close the trade and stay out for the day.","trade":{"name":"Makes money if Nifty stays between 25,100 and 25,350 till Tuesday 17 Nov","legs":["SELL 1 lot  Nifty 17-Nov  25,350 CE  at about ₹49","BUY  1 lot  Nifty 17-Nov  25,450 CE  at about ₹27","SELL 1 lot  Nifty 17-Nov  25,100 PE  at about ₹48","BUY  1 lot  Nifty 17-Nov  25,000 PE  at about ₹27"],"credit":"You collect about ₹44 per point × 65 = ₹2,860","maxLoss":"The most you can lose: ₹3,640 (56 points × 65)","when":"These are 11:10 am prices on Monday. Enter while Nifty sits between 25,180 and 25,320; refresh the prices first and place all four legs together.","exit":"Close all four legs if a 15-minute candle closes below 25,100 or above 25,380, or once you have kept half of the ₹2,860. Don't hold past 2 pm on Tuesday."},"why":["Big traders placed 235,000 new bets this morning that Nifty won't fall below 25,200, the biggest move on the board, so that is the floor.","They also placed 211,000 new bets that it stays under 25,300, so the ceiling is only 100 points above the floor.","Bets that it won't rise and bets that it won't fall were added almost equally today (1.19 million vs 1.14 million), so nobody is leaning either way.","The market expects a move of about 165 points either way by Tuesday's close, which fits inside the 25,100–25,350 trade. That is why both edges are sold."],"risk":"Trade one lot only. ₹3,640 is the most you can lose on the four legs. Expiry is Tuesday, so a gap through 25,100 or 25,380 can hit the maximum quickly; honour the stops. Paper-trade two weeks before using real money.","glossary":[["PE / put option","A bet that Nifty will fall. Buying one pays if it falls; selling one pays you upfront and costs you if it falls."],["CE / call option","A bet that Nifty will rise."],["Lot","Nifty options trade in lots of 65 units. ₹1 of option price = ₹65 per lot."],["Put spread","Sell one put, buy a cheaper one below it. You collect money, and your loss is capped."],["15-min candle close","Wait for the 15-minute bar on the chart to finish before acting, so one spike doesn't fool you."],["Call spread","Sell one call, buy a cheaper one above it. You collect money, and your loss is capped."],["Iron condor","A call spread and a put spread sold together. You collect both premiums; it pays if Nifty stays between the two sold strikes, and the loss is capped."]]},"bank":{"current":{"written":"16-Nov-2026 11:10","for":"Rest of Monday 16-Nov-2026 (23-Nov monthly)","stance":"Rest of Monday: 60,900–61,800 box, leaning up while 61,000 holds; buy 61,000–61,150 after a 15-min hold, no shorts before 61,700.","lines":["Lean up restored: Bank Nifty bounced 361 to 61,395 and near-spot puts added 29.0K against calls 12.7K, while 60,500–61,000 call writers covered 11.3K. The 61,713 high poked 63 points over Friday's 61,650 line; spot is back inside.","Floor: 61,000 PE 30.4K (+4.3K) is the working floor; 61,300 PE 7.4K (+4.5K) and 61,500 PE 10.0K (+4.0K) are today's biggest put adds. 60,500 PE 40.5K (−0.7K) stays the big wall, 879 under spot.","Ceiling: the 61,713 high was sold under fresh calls at 61,600 (+3.2K) and 61,700 (+3.5K); 62,000 CE 28.5K (+1.9K) is the wall, 63,000 CE 22.8K (+3.7K) behind. 60,500 CE unwound 8.0K to 18.0K.","Flow: total PCR 1.22 from 1.24, near-spot 0.83. Max pain 59,000, spot 2,379 above with five sessions to 23-Nov: still stretched, so a sharp payback stays possible. VIX 15.48.","December: PCR 1.02, max pain 59,600; 65,000 CE +8.7K to 14.3K was the biggest add on either month, 62,000 CE 17.8K. No Bank Nifty futures print in the header.","Pricing: 61,400 straddle 1,122 → ±954 by 23-Nov, about ±430 a session. ATM IV 15.0 call vs 18.0 put: skew 3.0 vols, down from 5.0 Friday, so protection was sold into the bounce."],"plan":[{"label":"Buy zone","text":"61,000–61,150 against 61,000 PE 30.4K (+4.3K) and 61,300 PE +4.5K, after a 15-min hold above 61,000. Stop on a 15-min close under 60,900. Target 61,600."},{"label":"Sell zone","text":"Only 61,700–61,800 under 61,700 CE (+3.5K) and 62,000 CE 28.5K, after a 15-min stall. Cover 61,400; stop on a 15-min close above 61,850."},{"label":"Target","text":"Longs from 61,100 → 61,600, half off at 61,350. Shorts from 61,750 → 61,400. Square day trades by 15:25."},{"label":"Invalidation","text":"15-min close below 60,900 → no longs; 60,500 PE 40.5K is the next floor. Above 61,850 → no shorts; 62,000 CE 28.5K next."},{"label":"Structure","text":"23-Nov bull put spread: sell 61,000 PE (≈412), buy 60,800 PE (≈335). Credit ≈77, risk ≈123, breakeven 60,923. Enter after a 15-min hold above 61,000 on a dip; exit on a 15-min close below 60,900."},{"label":"Avoid","text":"Buying at 61,400 now, the middle of the box. Buying 23-Nov 62,000 CE (293) outright. Shorting 61,000 with 30.4K puts under it. No naked writes."}],"risk":"Bank Nifty is 2,379 above max pain 59,000 and moves about 430 a session; a gap under 60,900 voids the floor. Record 7 right, 4 wrong, 2 open. Paper only."},"simple":{"written":"16-Nov-2026 11:10","for":"Rest of Monday 16 Nov","light":"green","lightLabel":"Buy the dip to 61,000","headline":"Bank Nifty bounced 361 points to 61,395 and big traders added bets it won't fall below 61,000; buy the next dip there, don't chase.","do":"If Bank Nifty dips to 61,000–61,150 and holds above 61,000 for 15 minutes, place the spread below; take profit if it reaches 61,600.","dont":"Don't buy at 61,400 in the middle of the range. Don't sell short unless it reaches 61,700–61,800 and stalls there for 15 minutes.","stop":"If a 15-minute candle closes below 60,900, stay out of Bank Nifty for the rest of that day.","trade":{"name":"Makes money if Bank Nifty stays above 61,000 till Monday 23 Nov","legs":["SELL 1 lot  Bank Nifty 23-Nov  61,000 PE  at about ₹412","BUY  1 lot  Bank Nifty 23-Nov  60,800 PE  at about ₹335"],"credit":"You collect about ₹77 per point × 30 = ₹2,310","maxLoss":"The most you can lose: ₹3,690 (123 points × 30)","when":"These are 11:10 am prices on Monday. Enter only after Bank Nifty has dipped to 61,000–61,150 and held above 61,000 for 15 minutes. Refresh the prices first.","exit":"Close it if a 15-minute candle closes below 60,900, or once you have kept half of the ₹2,310."},"why":["Big traders placed 4,300 new bets this morning that Bank Nifty won't fall below 61,000, taking that floor to 30,400 bets, the biggest near today's price.","New bets that it won't fall (29,000) were more than twice the new bets that it won't rise (12,700), so the big money leans up again.","Traders who had bet it stays under 60,500 and 61,000 gave up 11,300 of those bets as it rose, which is why the morning bounce held.","The market expects a move of about 950 points either way by 23 Nov, so a dip to 61,000 is quite possible. That is why the loss is capped."],"risk":"Trade one lot only. ₹3,690 is the most you can lose on the spread. Bank Nifty moves about 400–500 points a day; honour the 60,900 stop. Paper-trade two weeks before using real money.","glossary":[["PE / put option","A bet that Nifty will fall. Buying one pays if it falls; selling one pays you upfront and costs you if it falls."],["CE / call option","A bet that Nifty will rise."],["Lot","Bank Nifty options trade in lots of 30 units. ₹1 of option price = ₹30 per lot."],["Put spread","Sell one put, buy a cheaper one below it. You collect money, and your loss is capped."],["15-min candle close","Wait for the 15-minute bar on the chart to finish before acting, so one spike doesn't fool you."]]},"calls":[{"id":1,"opened":"04-Nov 14:28","kind":"Desk view","call":"Rest of Wednesday: stay between 55,500 and 56,300, leaning up; buy a dip to 55,650–55,750, don't sell short before 56,300","trigger":"Big traders placed twice as many new bets that it won't fall as that it won't rise; a fresh floor was built at 55,700","invalidation":"15-min close below 55,550 or above 56,420","status":"right","closed":"04-Nov 15:10","result":"Right on the box (held 55,803–55,947), but the lean up fizzled (55,930 → 55,814) and the 55,650–55,750 buy dip never came, no trade"},{"id":2,"opened":"04-Nov 15:10","kind":"Desk view","call":"Thursday: stay between 55,500 and 56,300, leaning up; buy a dip to 55,600–55,720, don't sell short before 56,300","trigger":"Big traders still placed twice as many new bets that it won't fall (35,000) as that it won't rise (15,000), but it slipped 116 points into the close, so buy lower","invalidation":"15-min close below 55,550 or above 56,420","status":"wrong","closed":"05-Nov 09:30","result":"Wrong: gapped open at 57,103, straight through the 56,420 line, before any trade inside the box was possible (+1,110 pts, 55,914 → 57,024, all outside the box)"},{"id":3,"opened":"05-Nov 10:27","kind":"Desk view","call":"Rest of Thursday: stay between 56,700 and 57,500, leaning up; buy a dip to 56,750–56,900, don’t sell short before 57,450","trigger":"Bank Nifty jumped 1,100 points at the open; big traders placed 47,000 new bets that it won’t fall and almost none that it won’t rise","invalidation":"15-min close below 56,650 or above 57,620","status":"wrong","closed":"05-Nov 13:45","result":"Wrong: broke above the 57,620 line by 1:45 pm (+748 pts, 57,024 → 57,771); the lean up was right but the box was not, and the 56,750–56,900 dip never came, no trade"},{"id":4,"opened":"05-Nov 13:17","kind":"Desk view","call":"Rest of Thursday: stay between 57,100 and 57,900, leaning up; buy a dip to 57,200–57,350, don’t sell short before 57,850","trigger":"Bank Nifty reached 57,483, right at the old 57,500 ceiling; big traders placed 5,200 new bets today that it won’t fall below 57,500, and the big wall is 58,000","invalidation":"15-min close below 57,050 or above 58,050","status":"right","closed":"05-Nov 15:30","result":"Right: stayed inside the box (high 57,848) and leaned up (57,473 → 57,774, +301 pts); the 57,200–57,350 buy dip never came, no trade"},{"id":5,"opened":"05-Nov 13:46","kind":"Desk view","call":"Rest of Thursday: stay between 57,400 and 58,050, leaning up; buy a dip to 57,450–57,600, don’t sell short before 58,000","trigger":"Bank Nifty broke through the 57,500 ceiling to 57,829; traders betting it stays under 57,500 gave up 2,300 bets since 1:17 pm, and the big wall is 58,000 with 76,600 bets","invalidation":"15-min close below 57,350 or above 58,150","status":"right","closed":"05-Nov 15:30","result":"Right: box held and it leaned up a little (57,752 → 57,774, +22 pts); the 57,450–57,600 buy dip never came, no trade"},{"id":6,"opened":"05-Nov 15:40","kind":"Desk view","call":"Friday: stay between 57,350 and 58,100, leaning up; buy a dip to 57,450–57,600, don’t sell short before 58,000","trigger":"Big traders placed 94,000 new bets today that it won’t fall and gave up 11,000 bets that it won’t rise; the biggest floor is 57,000 and the wall is 58,000","invalidation":"15-min close below 57,350 or above 58,150","status":"wrong","closed":"06-Nov 15:30","result":"Wrong: broke above the 58,150 line and closed at 59,086 (+1,312 pts, 57,774 → 59,086); the lean up and the 57,450–57,600 dip buy (low 57,321) were right, the box was far too small"},{"id":7,"opened":"06-Nov 15:40","kind":"Desk view","call":"Monday: stay between 58,500 and 59,800, leaning up; buy a dip to 58,600–58,800, don't sell short before 59,800","trigger":"Bank Nifty jumped 1,312 points to close at its high; big traders placed 55,000 new bets that it won't fall and only 4,000 that it won't rise, with the biggest floor at 58,000","invalidation":"15-min close below 58,400 or above 60,050","status":"right","closed":"09-Nov 15:30","result":"Right: stayed inside the box (low 58,878, high 59,741) and leaned up, closing at its high (+655 pts, 59,086 → 59,741); the 58,600–58,800 buy dip never came, no trade"},{"id":8,"opened":"09-Nov 15:40","kind":"Desk view","call":"Wednesday: stay between 59,000 and 60,500, leaning up; buy a dip to 59,200–59,400, don't sell short before 60,400","trigger":"Bank Nifty closed at its high, 59,741; big traders placed 31,000 new bets that it won't fall and under 2,000 that it won't rise, with a fresh floor at 59,000","invalidation":"15-min close below 58,950 or above 60,600","status":"wrong","closed":"11-Nov 15:30","result":"Wrong: closed Wednesday at 60,792, above the 60,600 line (+1,051 pts, 59,741 → 60,792); the lean up was right, the box was not; no readings during Wednesday, judged on the close"},{"id":9,"opened":"12-Nov 12:16","kind":"Desk view","call":"Rest of Thursday: stay between 60,500 and 61,600, leaning up; buy a dip to 60,750–60,900, don't sell short before 61,500","trigger":"Bank Nifty broke above Wednesday's 60,600 line and reached 61,406 today; big traders placed 11,000 new bets that it won't fall below 61,000, and 39,000 new bets that it won't fall against 17,000 that it won't rise","invalidation":"15-min close below 60,600 or above 61,700","status":"right","closed":"12-Nov 15:30","result":"Right: stayed inside the box (high 61,546) and leaned up (61,071 → 61,519, +448 pts); the 60,750–60,900 buy dip never came, no trade"},{"id":10,"opened":"12-Nov 13:45","kind":"Desk view","call":"Rest of Thursday: stay between 60,700 and 62,000, leaning up; buy a dip to 60,900–61,050, don't sell short before 61,900","trigger":"Bank Nifty made a new high at 61,486 with only 16,500 bets that it stays under 61,500, while 14,500 new bets came in today that it won't fall below 61,000; the real ceiling is 62,000","invalidation":"15-min close below 60,750 or above 62,100","status":"right","closed":"12-Nov 15:30","result":"Right: box held and it leaned up (61,453 → 61,519, +66 pts); the 60,900–61,050 buy dip never came, no trade"},{"id":11,"opened":"12-Nov 15:40","kind":"Desk view","call":"Friday: stay between 60,700 and 62,000, leaning up; buy a dip to 60,900–61,100, don't sell short before 61,900","trigger":"Bank Nifty closed up 726 points at 61,519, near its high; big traders placed 48,000 new bets today that it won't fall against 14,000 that it won't rise, with 14,000 of them at 61,000","invalidation":"15-min close below 60,750 or above 62,100","status":"right","closed":"13-Nov 15:30","result":"Right on the box only (low 60,781, high 61,301): the lean up was wrong, it closed down 484 at 61,034 (61,519 → 61,034); the 60,900–61,100 dip buy ended about flat and 61,900 never came. No readings during Friday, judged on the close and daily range"},{"id":12,"opened":"13-Nov 15:40","kind":"Desk view","call":"Monday: stay between 60,400 and 61,600, no lean; buy a dip to 60,500–60,650, sell only a stall at 61,350–61,500","trigger":"Bank Nifty fell 484 to 61,034 and both sides cut about 6,000 bets; 6,000 new bets that it stays under 61,000 came in as it fell, so the lean up is withdrawn","invalidation":"15-min close below 60,400 or above 61,650","status":"open","closed":"","result":""},{"id":13,"opened":"16-Nov 11:10","kind":"Desk view","call":"Rest of Monday: stay between 60,900 and 61,800, leaning up; buy a dip to 61,000–61,150, don't sell short before 61,700","trigger":"Bank Nifty bounced 361 points; big traders placed 29,000 new bets that it won't fall against 12,700 that it won't rise, with a fresh floor at 61,000","invalidation":"15-min close below 60,900 or above 61,850","status":"open","closed":"","result":""}],"lot":30}};
+/*DATA-END*/
+
+const $ = s => document.querySelector(s);
+const fmt = (n,d=0) => n==null?'—':Number(n).toLocaleString('en-IN',{maximumFractionDigits:d,minimumFractionDigits:d});
+const lakh = n => (n/1e5).toFixed(n>=1e6?0:1)+'L';
+const sgn = n => (n>0?'+':'')+fmt(n,2);
+
+// ---- symbol switch (Nifty / Bank Nifty) ----
+const SYMS = [['nifty','Nifty 50'],['bank','Bank Nifty']].filter(([k])=> k==='nifty' || DATA.bank);
+let sym = 'nifty';
+try { const h=location.hash.replace('#',''); if (SYMS.some(s=>s[0]===h)) sym=h; } catch(e){}
+$('#symtabs').innerHTML = SYMS.map(([k,l])=>`<button class="tab" role="tab" id="sym-${k}" aria-selected="${k===sym}">${l}</button>`).join('');
+$('#symtabs').addEventListener('click',e=>{const t=e.target.closest('.tab'); if(!t)return; sym=t.id.slice(4); try{history.replaceState(null,'','#'+sym)}catch(e){} show();});
+
+let D, K, HIST, cur;
+function show(){
+  D = sym==='bank' ? DATA.bank : DATA;
+  K = sym==='bank' ? (DESK.bank||{}) : DESK;
+  HIST = Array.isArray(HISTORY) ? (sym==='bank'?[]:HISTORY) : (HISTORY[sym]||[]);
+  document.querySelectorAll('#symtabs .tab').forEach(t=>t.setAttribute('aria-selected',t.id==='sym-'+sym));
+  const label = SYMS.find(s=>s[0]===sym)[1];
+
+  // Header
+  const live = DATA.market.status==='Open';
+  $('#dot').className='dot'+(live?' live':'');
+  $('#status').textContent = live ? 'Market open' : 'Market closed · showing last session';
+  $('#stamp').textContent = D.chains[0].ts;
+
+  // After 15:30 on an expiry day, the expiring chain is dead — roll to the next one
+  const stampDay=D.chains[0].ts.split(' ')[0], stampTime=D.chains[0].ts.split(' ')[1]||'';
+  const PRIMARY = Math.max(0, D.chains.findIndex(c=>!(c.expiry===stampDay && stampTime>='15:30')));
+  const n=D.nifty, v=DATA.vix, c0=D.chains[PRIMARY];
+  $('#strip').innerHTML = `
+   <div class="tile"><div class="lbl">${label}</div><div class="val num">${fmt(n.last,2)}</div><div class="sub num ${n.chg>=0?'up':'down'}">${sgn(n.last-n.prevClose)} (${sgn(n.chg)}%)</div></div>
+   <div class="tile"><div class="lbl">Day range</div><div class="val num" style="font-size:18px">${fmt(n.low,0)} – ${fmt(n.high,0)}</div><div class="sub num">open ${fmt(n.open,0)} · prev ${fmt(n.prevClose,0)}</div></div>
+   ${D.fut?`<div class="tile"><div class="lbl">Futures ${D.fut.expiry.slice(0,6)}</div><div class="val num">${fmt(D.fut.last,2)}</div><div class="sub num">${D.fut.last-n.last>=0?'premium':'discount'} ${fmt(Math.abs(D.fut.last-n.last),0)}</div></div>`:''}
+   <div class="tile"><div class="lbl">India VIX</div><div class="val num">${fmt(v.last,2)}</div><div class="sub num ${v.chg>=0?'down':'up'}">${sgn(v.chg)}%</div></div>
+   <div class="tile"><div class="lbl">Expected move by ${c0.expiry.slice(0,6)}</div><div class="val num">±${fmt(c0.expMove,0)}</div><div class="sub">what option prices imply</div></div>`;
+  $('#techStrip').innerHTML = `
+   <div class="tile"><div class="lbl">PCR · ${c0.expiry.slice(0,6)}</div><div class="val num">${fmt(c0.pcr,2)}</div><div class="sub num">near-ATM ${fmt(c0.pcrNear,2)}</div></div>
+   <div class="tile"><div class="lbl">Max pain</div><div class="val num">${fmt(c0.maxPain)}</div><div class="sub num">spot ${c0.spot>c0.maxPain?'+':''}${fmt(c0.spot-c0.maxPain,0)}</div></div>
+   <div class="tile"><div class="lbl">ATM straddle</div><div class="val num">${fmt(c0.straddle,0)}</div><div class="sub num">IV CE ${c0.atmIV.ce} · PE ${c0.atmIV.pe}</div></div>`;
+
+  // Beginner view
+  const s=K.simple; $('#simple').hidden=!s;
+  if (s){
+    $('#light').className='light '+(s.light||''); $('#lightLabel').textContent=s.lightLabel; $('#simpleFor').textContent=s.for;
+    $('#simpleHeadline').textContent=s.headline; $('#simpleDo').textContent=s.do; $('#simpleDont').textContent=s.dont; $('#simpleStop').textContent=s.stop;
+    const tr=s.trade; $('#trade').hidden=!tr; $('#trade').innerHTML = tr ? `<div class="name">Trade idea: ${tr.name}</div><div class="legs">${tr.legs.map(l=>`<div>${l}</div>`).join('')}</div><div class="m"><div>${tr.credit}</div><div>${tr.maxLoss}</div><div><b>When:</b> ${tr.when}</div><div><b>Exit:</b> ${tr.exit}</div></div>` : '';
+    $('#simpleWhy').innerHTML=s.why.map(t=>`<li>${t}</li>`).join('');
+    $('#simpleRisk').textContent=s.risk;
+    $('#gloss').innerHTML=(s.glossary||DESK.simple?.glossary||[]).map(g=>`<div><b>${g[0]}</b>${g[1]}</div>`).join('');
+  } else {
+    $('#simple').hidden=false; $('#light').className='light'; $('#lightLabel').textContent='No plan written yet'; $('#simpleFor').textContent=label;
+    $('#simpleHeadline').textContent=`The ${label} plan appears here after the next refresh.`; $('#simpleDo').textContent='—'; $('#simpleDont').textContent='—'; $('#simpleStop').textContent='—';
+    $('#trade').innerHTML=''; $('#trade').hidden=true; $('#simpleWhy').innerHTML=''; $('#simpleRisk').textContent=''; $('#gloss').innerHTML='';
+  }
+  // Analyst notes
+  const d=K.current; $('#desk').hidden=!d;
+  if (d){
+    $('#deskFor').textContent=d.for; $('#deskWritten').textContent=d.written;
+    $('#deskStance').textContent=d.stance;
+    $('#deskLines').innerHTML=d.lines.map(t=>`<li>${t}</li>`).join('');
+    $('#deskPlan').innerHTML=d.plan.map(p=>`<dt>${p.label}</dt><dd>${p.text}</dd>`).join('');
+    $('#deskRisk').textContent=d.risk;
+  }
+  // Track record
+  const calls=K.calls||[]; $('#logSec').hidden=!calls.length;
+  if (calls.length){
+    const closed=calls.filter(c=>c.status==='right'||c.status==='wrong'), right=closed.filter(c=>c.status==='right').length;
+    $('#logStat').textContent = closed.length ? `· ${right}/${closed.length} right (${Math.round(100*right/closed.length)}%) · ${calls.filter(c=>c.status==='open').length} open` : `· ${calls.length} open, none resolved yet`;
+    $('#log').innerHTML = [...calls].reverse().map(c=>`<div class="call">
+      <div class="top"><span class="pill ${c.status}">${c.status}</span><span class="num small muted">#${c.id}</span><span class="when num">${c.opened}${c.closed?' → '+c.closed:''}</span></div>
+      <div class="what">${c.call}</div>
+      <div class="why">Why: ${c.trigger}${c.invalidation&&c.invalidation!=='—'?` · Stop: ${c.invalidation}`:''}</div>
+      ${c.result?`<div class="out"><b>Outcome:</b> ${c.result}</div>`:''}</div>`).join('');
+  }
+
+  // Rule-based read
+  const b=$('#bias'); b.textContent=D.bias; b.className='bias '+(/bullish/i.test(D.bias)?'b1':/bearish/i.test(D.bias)?'b-1':'b0');
+  $('#notes').innerHTML = D.notes.map(t=>`<li>${t}</li>`).join('');
+
+  // Expiry tabs
+  cur=PRIMARY;
+  $('#tabs').innerHTML = D.chains.map((c,i)=>`<button class="tab" role="tab" id="tab${i}" aria-selected="${i===cur}">Expiry ${c.expiry}${(c.expiry===stampDay && stampTime>='15:30')?' (expired)':''}</button>`).join('');
+  render();
+
+  // Intraday history sparklines
+  $('#histSec').hidden = !(HIST.length>1);
+  if (HIST.length>1){
+    const spark=(lbl,key,dd=0)=>{
+      const vals=HIST.map(h=>h[key]); const mn=Math.min(...vals), mx=Math.max(...vals), W=220,H=56;
+      const pts=vals.map((v,i)=>`${8+i/(vals.length-1)*(W-16)},${H-8-(mx>mn?(v-mn)/(mx-mn):0.5)*(H-20)}`).join(' ');
+      const last=pts.split(' ').pop().split(',');
+      return `<div class="tile"><div class="lbl">${lbl}</div><div class="val num" style="font-size:18px">${fmt(vals.at(-1),dd)} <span class="small muted">${HIST.at(-1).t}</span></div>
+        <svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto"><polyline points="${pts}" fill="none" stroke="var(--fg)" stroke-width="2"/><circle cx="${last[0]}" cy="${last[1]}" r="3.5" fill="var(--pe)"/>
+        <text x="8" y="${H-1}" font-size="9" fill="var(--faint)">${HIST[0].t}</text><text x="${W-8}" y="${H-1}" text-anchor="end" font-size="9" fill="var(--faint)">lo ${fmt(mn,dd)} · hi ${fmt(mx,dd)}</text></svg></div>`; };
+    $('#hist').innerHTML = spark('Spot','spot',0)+spark('PCR (near expiry)','pcr',2)+spark('India VIX','vix',2)+spark('Max pain','maxPain',0);
+  }
+}
+$('#tabs').addEventListener('click',e=>{const t=e.target.closest('.tab'); if(!t)return; cur=+t.id.slice(3); render();});
+
+function render(){
+  const c=D.chains[cur];
+  document.querySelectorAll('#tabs .tab').forEach((t,i)=>t.setAttribute('aria-selected',i===cur));
+  const lvTable = rows => `<table>${rows.map(r=>`<tr><td class="num">${fmt(r.k)}</td><td class="num">${lakh(r.oi)}</td><td class="num">${r.chg>=0?'+':''}${lakh(r.chg)}</td></tr>`).join('')}</table>`;
+  $('#levels').innerHTML = `
+   <div class="lv"><h2 class="pe">Support · biggest put OI</h2>${lvTable(c.support)}</div>
+   <div class="lv"><h2 class="ce">Resistance · biggest call OI</h2>${lvTable(c.resistance)}</div>
+   <div class="lv"><h2 class="pe">Puts added today</h2>${lvTable(c.peAdds)}</div>
+   <div class="lv"><h2 class="ce">Calls added today</h2>${lvTable(c.ceAdds)}</div>`;
+  drawBars('#oiChart', c, r=>r.ce.oi, r=>r.pe.oi, false);
+  drawBars('#chgChart', c, r=>r.ce.chg, r=>r.pe.chg, true);
+  drawChain(c);
+}
+
+function drawBars(sel, c, ceF, peF, signed){
+  const rows=c.rows, W=760, rowH=18, L=70, R=16, top=10;
+  const H=top+rows.length*rowH+16;
+  const mx=Math.max(1,...rows.map(r=>Math.max(Math.abs(ceF(r)),Math.abs(peF(r)))));
+  const half=(W-L-R)/2, mid=L+half;
+  const sc=val=>Math.abs(val)/mx*(half-10);
+  let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${signed?'Change in open interest':'Open interest'} by strike">`;
+  s+=`<line x1="${mid}" x2="${mid}" y1="${top}" y2="${H-14}" stroke="var(--line)"/>`;
+  rows.forEach((r,i)=>{
+    const y=top+i*rowH, ce=ceF(r), pe=peF(r);
+    // puts to the left of mid, calls to the right (unwinding flips toward the centre line on the signed chart)
+    const pw=sc(pe), cw=sc(ce);
+    const px = mid-pw, cx = mid;   // puts always left, calls always right; unwinding shown faded
+    s+=`<text x="${L-8}" y="${y+13}" text-anchor="end" font-size="11" font-family="var(--mono)" fill="${r.k===c.atm?'var(--fg)':'var(--muted)'}" font-weight="${r.k===c.atm?600:400}">${r.k}</text>`;
+    s+=`<rect data-tip="${r.k} PE  OI ${lakh(r.pe.oi)}  Δ ${r.pe.chg>=0?'+':''}${lakh(r.pe.chg)}  LTP ${r.pe.ltp}" x="${px}" y="${y+2}" width="${pw}" height="${rowH-5}" rx="2" fill="var(--pe)" opacity="${signed&&pe<0?.45:1}"/>`;
+    s+=`<rect data-tip="${r.k} CE  OI ${lakh(r.ce.oi)}  Δ ${r.ce.chg>=0?'+':''}${lakh(r.ce.chg)}  LTP ${r.ce.ltp}" x="${cx}" y="${y+2}" width="${cw}" height="${rowH-5}" rx="2" fill="var(--ce)" opacity="${signed&&ce<0?.45:1}"/>`;
+  });
+  // spot marker: interpolate between strikes
+  const ks=rows.map(r=>r.k); const i=ks.findIndex(k=>k>=c.spot);
+  if(i>0){ const y=top+(i-1+(c.spot-ks[i-1])/(ks[i]-ks[i-1]))*rowH+rowH/2;
+    s+=`<line x1="${L-4}" x2="${W-R}" y1="${y}" y2="${y}" stroke="var(--spot)" stroke-dasharray="3 3"/><text x="${W-R}" y="${y-3}" text-anchor="end" font-size="10" fill="var(--fg)" font-family="var(--mono)">spot ${fmt(c.spot,0)}</text>`; }
+  s+=`<text x="${L}" y="${H-2}" font-size="10" fill="var(--faint)">◀ puts · max ${lakh(mx)}</text><text x="${W-R}" y="${H-2}" text-anchor="end" font-size="10" fill="var(--faint)">calls ▶</text></svg>`;
+  $(sel).innerHTML=s;
+}
+
+function drawChain(c){
+  const h=`<tr><th class="ceh">Bias</th><th class="ceh">CE OI</th><th class="ceh">Δ OI</th><th class="ceh">IV</th><th class="ceh">LTP</th><th class="k">Strike</th><th class="peh">LTP</th><th class="peh">IV</th><th class="peh">Δ OI</th><th class="peh">PE OI</th><th class="peh">Bias</th></tr>`;
+  const body=c.rows.map(r=>{
+    const ceW = r.ce.chg>r.pe.chg, atm=r.k===c.atm;
+    return `<tr class="${atm?'atm':''}">
+      <td class="b ${ceW?'w':''}">${r.ce.b}</td><td class="num ${r.k<c.spot?'itm':''}">${lakh(r.ce.oi)}</td><td class="num ${r.k<c.spot?'itm':''}">${r.ce.chg>=0?'+':''}${lakh(r.ce.chg)}</td><td class="num ${r.k<c.spot?'itm':''}">${r.ce.iv||'—'}</td><td class="num ${r.k<c.spot?'itm':''}">${fmt(r.ce.ltp,2)}</td>
+      <td class="k num">${r.k}</td>
+      <td class="num ${r.k>c.spot?'itm':''}">${fmt(r.pe.ltp,2)}</td><td class="num ${r.k>c.spot?'itm':''}">${r.pe.iv||'—'}</td><td class="num ${r.k>c.spot?'itm':''}">${r.pe.chg>=0?'+':''}${lakh(r.pe.chg)}</td><td class="num ${r.k>c.spot?'itm':''}">${lakh(r.pe.oi)}</td><td class="b ${!ceW?'w':''}">${r.pe.b}</td></tr>`;}).join('');
+  $('#chain').innerHTML=h+body;
+}
+
+// Tooltips on bars
+const tip=$('#tip');
+document.addEventListener('mousemove',e=>{const t=e.target.closest('[data-tip]'); if(!t){tip.hidden=true;return;}
+  tip.textContent=t.dataset.tip; tip.hidden=false; tip.style.left=Math.min(e.clientX+12,innerWidth-tip.offsetWidth-8)+'px'; tip.style.top=(e.clientY+14)+'px';});
+document.addEventListener('touchstart',e=>{const t=e.target.closest('[data-tip]'); if(!t){tip.hidden=true;return;} tip.textContent=t.dataset.tip; tip.hidden=false; tip.style.left='16px'; tip.style.top=(e.touches[0].clientY+14)+'px';},{passive:true});
+
+show();
+
+// ---- auto refresh: poll for a newer build and reload when the data stamp changes ----
+(function(){
+  const stampOf = html => (html.match(/"fetchedAt":"([^"]+)"/)||[])[1];
+  const mine = stampOf(document.documentElement.outerHTML) || DATA.fetchedAt;
+  const ageEl = $('#age');
+  function age(){
+    const m = Math.round((Date.now()-new Date(DATA.fetchedAt).getTime())/60000);
+    ageEl.textContent = (m<1?'updated just now':m<60?`updated ${m} min ago`:`updated ${Math.round(m/60)} h ago`) + ' · auto-refreshes';
+  }
+  age(); setInterval(age, 30000);
+  async function check(){
+    if (document.hidden) return;
+    try {
+      const r = await fetch(location.pathname + '?v=' + Date.now(), {cache:'no-store'});
+      if (!r.ok) return;
+      const s = stampOf(await r.text());
+      if (s && s !== mine) location.reload();
+    } catch(e) {}
+  }
+  setInterval(check, 120000);
+  document.addEventListener('visibilitychange', ()=>{ if(!document.hidden) check(); });
+})();
+</script>
+</body></html>
