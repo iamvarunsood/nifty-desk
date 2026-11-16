@@ -1,0 +1,381 @@
+<title>Nifty Options Desk</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a trading-desk sheet. Summary strip, then levels, then the OI profile, then the chain. Phone-first, one column. */
+:root{
+  --bg:#f6f5f2; --panel:#ffffff; --line:#dedbd3; --fg:#1c1b18; --muted:#6b685f; --faint:#a39f93;
+  --ce:#C8552D; --pe:#1F8A70; --ce-soft:#f7e3da; --pe-soft:#d9efe8;
+  --good:#1F8A70; --bad:#C8552D; --warn:#a86b00; --spot:#1c1b18;
+  --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#141413; --panel:#1e1e1c; --line:#33322e; --fg:#ecebe6; --muted:#a6a398; --faint:#6e6b62;
+  --ce:#E06A42; --pe:#2FA383; --ce-soft:#3a2219; --pe-soft:#17302a; --good:#2FA383; --bad:#E06A42; --warn:#d7a04a; --spot:#ecebe6; color-scheme:dark } }
+:root[data-theme="dark"]{
+  --bg:#141413; --panel:#1e1e1c; --line:#33322e; --fg:#ecebe6; --muted:#a6a398; --faint:#6e6b62;
+  --ce:#E06A42; --pe:#2FA383; --ce-soft:#3a2219; --pe-soft:#17302a; --good:#2FA383; --bad:#E06A42; --warn:#d7a04a; --spot:#ecebe6; color-scheme:dark }
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--sans);font-size:15px;line-height:1.45;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:14px 40px}
+.wrap{max-width:860px;margin:0 auto;display:grid;gap:18px} .wrap>*{min-width:0}
+h1{font-size:17px;font-weight:600;margin:0;letter-spacing:.01em}
+h2{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:0 0 10px}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.muted{color:var(--muted)} .small{font-size:12.5px}
+.up{color:var(--good)} .down{color:var(--bad)}
+
+header{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:baseline;justify-content:space-between;border-bottom:1px solid var(--line);padding-bottom:10px}
+.status{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--muted)}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--faint)} .dot.live{background:var(--good)}
+
+.strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(128px,1fr));gap:10px}
+.tile{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:10px 12px;min-width:0}
+.tile .lbl{font-size:11.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted)}
+.tile .val{font-size:22px;font-weight:500;line-height:1.15;margin-top:2px}
+.tile .sub{font-size:12.5px;color:var(--muted);margin-top:2px}
+.bias{display:inline-block;padding:2px 9px;border-radius:999px;font-size:12.5px;font-weight:600;border:1px solid var(--line)}
+.bias.b1{background:var(--pe-soft);color:var(--pe)} .bias.b-1{background:var(--ce-soft);color:var(--ce)}
+
+.simple{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:14px;display:grid;gap:12px}
+.light{display:flex;align-items:center;gap:10px;font-weight:600;font-size:15px}
+.light i{width:14px;height:14px;border-radius:50%;flex:none;background:var(--warn)} .light.green i{background:var(--good)} .light.red i{background:var(--bad)}
+.headline{font-size:18px;font-weight:600;line-height:1.35;margin:0;text-wrap:balance}
+.steps{display:grid;gap:8px;margin:0}
+.step{display:grid;grid-template-columns:64px 1fr;gap:10px;align-items:start}
+.step b{font-size:11.5px;text-transform:uppercase;letter-spacing:.07em;padding-top:3px}
+.step.do b{color:var(--good)} .step.dont b{color:var(--bad)} .step.stop b{color:var(--warn)}
+.trade{border:1px solid var(--line);border-radius:6px;padding:10px 12px;display:grid;gap:6px;background:var(--bg)}
+.trade .name{font-weight:600} .trade .legs{display:grid;gap:3px} .trade .legs div{font-family:var(--mono);font-size:13px;white-space:pre-wrap}
+.trade .m{display:grid;gap:3px;font-size:13.5px}
+.simple ul{margin:0;padding-left:18px;display:grid;gap:6px;max-width:66ch}
+details{border:1px solid var(--line);border-radius:6px;background:var(--panel)}
+details>summary{cursor:pointer;padding:10px 14px;font-weight:600;font-size:14px;list-style:none;display:flex;justify-content:space-between}
+details>summary::after{content:"+";color:var(--muted)} details[open]>summary::after{content:"–"}
+details>.inner{padding:4px 14px 14px;display:grid;gap:18px;border-top:1px solid var(--line)}
+.gloss{display:grid;gap:6px;font-size:13px} .gloss div b{display:block}
+.desk{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--fg);border-radius:6px;padding:12px 14px;display:grid;gap:10px}
+.deskhead{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:baseline} .deskhead h2{margin:0}
+.stance{margin:0;font-size:17px;font-weight:600;line-height:1.35;text-wrap:balance}
+.desk ul{margin:0;padding-left:18px;display:grid;gap:6px;max-width:68ch} .desk li::marker{color:var(--faint)}
+.plan{margin:0;display:grid;grid-template-columns:max-content 1fr;gap:5px 12px;font-size:14px;border-top:1px solid var(--line);padding-top:10px}
+.plan dt{font-size:11.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);padding-top:2px} .plan dd{margin:0;min-width:0}
+@media (max-width:480px){.plan{grid-template-columns:1fr;gap:2px 0} .plan dd{margin-bottom:6px}}
+.risk{margin:0;color:var(--muted);border-top:1px solid var(--line);padding-top:8px}
+.calls{display:grid;gap:8px}
+.call{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:10px 12px;display:grid;gap:4px;font-size:13.5px}
+.call .top{display:flex;gap:8px;align-items:center;flex-wrap:wrap} .call .top .when{color:var(--muted);font-size:12.5px;margin-left:auto}
+.call .what{font-weight:600} .call .why,.call .out{color:var(--muted);font-size:13px} .call .out b{color:var(--fg);font-weight:500}
+.pill{display:inline-block;padding:1px 8px;border-radius:999px;font-size:11.5px;font-weight:600;border:1px solid var(--line)}
+.pill.right{background:var(--pe-soft);color:var(--pe)} .pill.wrong{background:var(--ce-soft);color:var(--ce)} .pill.open{color:var(--muted)}
+.read{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:12px 14px}
+.read ul{margin:0;padding-left:18px;display:grid;gap:5px}
+.read li::marker{color:var(--faint)}
+
+.levels{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:480px){.levels{grid-template-columns:1fr}}
+.lv{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:10px 12px}
+.lv h2{margin-bottom:6px}
+.lv h2.ce{color:var(--ce)} .lv h2.pe{color:var(--pe)}
+.lv table{width:100%;border-collapse:collapse;font-size:13.5px}
+.lv td{padding:3px 0;border-top:1px solid var(--line)} .lv tr:first-child td{border-top:0}
+.lv td:first-child{font-weight:600} .lv td:nth-child(2),.lv td:nth-child(3){text-align:right;color:var(--muted)}
+
+.tabs{display:flex;gap:6px;flex-wrap:wrap}
+.tab{border:1px solid var(--line);background:var(--panel);color:var(--muted);border-radius:999px;padding:4px 12px;font:inherit;font-size:13px;cursor:pointer}
+.tab[aria-selected="true"]{color:var(--fg);border-color:var(--fg);font-weight:600}
+.symtabs .tab{font-size:14px;padding:6px 16px}
+.tab:focus-visible{outline:2px solid var(--pe);outline-offset:2px}
+
+.chart{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:12px 12px 6px;min-width:0}
+.chart svg{width:100%;height:auto;display:block}
+.legend{display:flex;gap:14px;font-size:12.5px;color:var(--muted);margin-bottom:6px;flex-wrap:wrap}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+.tip{position:fixed;pointer-events:none;background:var(--fg);color:var(--bg);font-size:12px;padding:6px 8px;border-radius:4px;z-index:5;white-space:nowrap}
+
+.chainwrap{overflow-x:auto;background:var(--panel);border:1px solid var(--line);border-radius:6px}
+table.chain{border-collapse:collapse;width:100%;min-width:640px;font-size:12.5px}
+.chain th{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600;padding:8px 6px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+.chain td{padding:5px 6px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+.chain th.k,.chain td.k{text-align:center;font-weight:600;background:var(--bg)}
+.chain tr.atm td.k{outline:2px solid var(--spot);outline-offset:-2px}
+.chain td.b{font-size:11px;text-align:left;color:var(--muted)}
+.chain td.b.w{color:var(--fg)}
+.chain .ceh{color:var(--ce)} .chain .peh{color:var(--pe)}
+.chain td.itm{background:color-mix(in srgb,var(--bg) 60%,transparent)}
+
+.hist{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
+footer{font-size:12px;color:var(--muted);border-top:1px solid var(--line);padding-top:10px;line-height:1.5}
+@media (prefers-reduced-motion:no-preference){.tab{transition:border-color .15s}}
+</style>
+
+<div class="wrap">
+  <header>
+    <div><h1>Nifty Options Desk</h1><div class="status"><span class="dot" id="dot"></span><span id="status"></span></div></div>
+    <div class="small muted">Data: NSE option chain · stamp <span class="num" id="stamp"></span> · <span id="age"></span></div>
+  </header>
+
+  <div class="tabs symtabs" role="tablist" id="symtabs"></div>
+
+  <section class="simple" id="simple" hidden>
+    <div class="light" id="light"><i></i><span id="lightLabel"></span><span class="small muted" style="font-weight:400;margin-left:auto">for <span id="simpleFor"></span></span></div>
+    <p class="headline" id="simpleHeadline"></p>
+    <div class="steps">
+      <div class="step do"><b>Do</b><span id="simpleDo"></span></div>
+      <div class="step dont"><b>Don't</b><span id="simpleDont"></span></div>
+      <div class="step stop"><b>Stop if</b><span id="simpleStop"></span></div>
+    </div>
+    <div class="trade" id="trade"></div>
+    <div><h2>Why</h2><ul id="simpleWhy"></ul></div>
+    <p class="risk small" id="simpleRisk"></p>
+    <details><summary>What these words mean</summary><div class="inner gloss" id="gloss"></div></details>
+  </section>
+
+  <section class="strip" id="strip"></section>
+
+  <details id="tech"><summary>Show the technical view</summary><div class="inner">
+  <section class="strip" id="techStrip" style="margin-top:14px"></section>
+  <section class="desk" id="desk" hidden>
+    <div class="deskhead"><h2>Analyst notes · <span id="deskFor"></span></h2><span class="small muted">written <span class="num" id="deskWritten"></span></span></div>
+    <p class="stance" id="deskStance"></p>
+    <ul id="deskLines"></ul>
+    <dl class="plan" id="deskPlan"></dl>
+    <p class="risk small" id="deskRisk"></p>
+  </section>
+
+  <section class="read">
+    <h2>Rule-based read <span class="bias" id="bias"></span></h2>
+    <ul id="notes"></ul>
+  </section>
+
+  <div class="tabs" role="tablist" id="tabs"></div>
+
+  <section class="levels" id="levels"></section>
+
+  <section class="chart">
+    <h2>Open interest by strike</h2>
+    <div class="legend"><span><i style="background:var(--pe)"></i>Puts (support)</span><span><i style="background:var(--ce)"></i>Calls (resistance)</span><span>│ spot</span></div>
+    <div id="oiChart"></div>
+  </section>
+
+  <section class="chart">
+    <h2>Change in OI today</h2>
+    <div class="legend"><span><i style="background:var(--pe)"></i>Puts</span><span><i style="background:var(--ce)"></i>Calls</span><span class="muted">faded = OI reduced (unwinding)</span></div>
+    <div id="chgChart"></div>
+  </section>
+
+  <section>
+    <h2>Chain around spot</h2>
+    <div class="chainwrap"><table class="chain" id="chain"></table></div>
+    <div class="small muted" style="margin-top:6px">Writing = OI up, premium down (sellers adding). Buying = OI up, premium up. Bold labels mark the heavier side at that strike.</div>
+  </section>
+
+  <section id="histSec" hidden>
+    <h2>Today so far</h2>
+    <div class="hist" id="hist"></div>
+  </section>
+
+  </div></details>
+
+  <section id="logSec" hidden>
+    <h2>Track record <span class="small muted" id="logStat" style="text-transform:none;letter-spacing:0"></span></h2>
+    <div class="calls" id="log"></div>
+  </section>
+
+  <footer>
+    Refreshes about every 30 minutes during market hours when the tracker is running. Figures are NSE's published open interest, not a forecast; the bias is a rule-based heuristic.
+    SEBI's FY22–FY24 study found 93% of individual F&O traders lost money. Size positions accordingly. Not investment advice.
+  </footer>
+</div>
+<div class="tip" id="tip" hidden></div>
+
+<script>
+/*DATA-START*/
+const DATA = __DATA__;
+const HISTORY = __HISTORY__;
+const DESK = __DESK__;
+/*DATA-END*/
+
+const $ = s => document.querySelector(s);
+const fmt = (n,d=0) => n==null?'—':Number(n).toLocaleString('en-IN',{maximumFractionDigits:d,minimumFractionDigits:d});
+const lakh = n => (n/1e5).toFixed(n>=1e6?0:1)+'L';
+const sgn = n => (n>0?'+':'')+fmt(n,2);
+
+// ---- symbol switch (Nifty / Bank Nifty) ----
+const SYMS = [['nifty','Nifty 50'],['bank','Bank Nifty']].filter(([k])=> k==='nifty' || DATA.bank);
+let sym = 'nifty';
+try { const h=location.hash.replace('#',''); if (SYMS.some(s=>s[0]===h)) sym=h; } catch(e){}
+$('#symtabs').innerHTML = SYMS.map(([k,l])=>`<button class="tab" role="tab" id="sym-${k}" aria-selected="${k===sym}">${l}</button>`).join('');
+$('#symtabs').addEventListener('click',e=>{const t=e.target.closest('.tab'); if(!t)return; sym=t.id.slice(4); try{history.replaceState(null,'','#'+sym)}catch(e){} show();});
+
+let D, K, HIST, cur;
+function show(){
+  D = sym==='bank' ? DATA.bank : DATA;
+  K = sym==='bank' ? (DESK.bank||{}) : DESK;
+  HIST = Array.isArray(HISTORY) ? (sym==='bank'?[]:HISTORY) : (HISTORY[sym]||[]);
+  document.querySelectorAll('#symtabs .tab').forEach(t=>t.setAttribute('aria-selected',t.id==='sym-'+sym));
+  const label = SYMS.find(s=>s[0]===sym)[1];
+
+  // Header
+  const live = DATA.market.status==='Open';
+  $('#dot').className='dot'+(live?' live':'');
+  $('#status').textContent = live ? 'Market open' : 'Market closed · showing last session';
+  $('#stamp').textContent = D.chains[0].ts;
+
+  // After 15:30 on an expiry day, the expiring chain is dead — roll to the next one
+  const stampDay=D.chains[0].ts.split(' ')[0], stampTime=D.chains[0].ts.split(' ')[1]||'';
+  const PRIMARY = Math.max(0, D.chains.findIndex(c=>!(c.expiry===stampDay && stampTime>='15:30')));
+  const n=D.nifty, v=DATA.vix, c0=D.chains[PRIMARY];
+  $('#strip').innerHTML = `
+   <div class="tile"><div class="lbl">${label}</div><div class="val num">${fmt(n.last,2)}</div><div class="sub num ${n.chg>=0?'up':'down'}">${sgn(n.last-n.prevClose)} (${sgn(n.chg)}%)</div></div>
+   <div class="tile"><div class="lbl">Day range</div><div class="val num" style="font-size:18px">${fmt(n.low,0)} – ${fmt(n.high,0)}</div><div class="sub num">open ${fmt(n.open,0)} · prev ${fmt(n.prevClose,0)}</div></div>
+   ${D.fut?`<div class="tile"><div class="lbl">Futures ${D.fut.expiry.slice(0,6)}</div><div class="val num">${fmt(D.fut.last,2)}</div><div class="sub num">${D.fut.last-n.last>=0?'premium':'discount'} ${fmt(Math.abs(D.fut.last-n.last),0)}</div></div>`:''}
+   <div class="tile"><div class="lbl">India VIX</div><div class="val num">${fmt(v.last,2)}</div><div class="sub num ${v.chg>=0?'down':'up'}">${sgn(v.chg)}%</div></div>
+   <div class="tile"><div class="lbl">Expected move by ${c0.expiry.slice(0,6)}</div><div class="val num">±${fmt(c0.expMove,0)}</div><div class="sub">what option prices imply</div></div>`;
+  $('#techStrip').innerHTML = `
+   <div class="tile"><div class="lbl">PCR · ${c0.expiry.slice(0,6)}</div><div class="val num">${fmt(c0.pcr,2)}</div><div class="sub num">near-ATM ${fmt(c0.pcrNear,2)}</div></div>
+   <div class="tile"><div class="lbl">Max pain</div><div class="val num">${fmt(c0.maxPain)}</div><div class="sub num">spot ${c0.spot>c0.maxPain?'+':''}${fmt(c0.spot-c0.maxPain,0)}</div></div>
+   <div class="tile"><div class="lbl">ATM straddle</div><div class="val num">${fmt(c0.straddle,0)}</div><div class="sub num">IV CE ${c0.atmIV.ce} · PE ${c0.atmIV.pe}</div></div>`;
+
+  // Beginner view
+  const s=K.simple; $('#simple').hidden=!s;
+  if (s){
+    $('#light').className='light '+(s.light||''); $('#lightLabel').textContent=s.lightLabel; $('#simpleFor').textContent=s.for;
+    $('#simpleHeadline').textContent=s.headline; $('#simpleDo').textContent=s.do; $('#simpleDont').textContent=s.dont; $('#simpleStop').textContent=s.stop;
+    const tr=s.trade; $('#trade').hidden=!tr; $('#trade').innerHTML = tr ? `<div class="name">Trade idea: ${tr.name}</div><div class="legs">${tr.legs.map(l=>`<div>${l}</div>`).join('')}</div><div class="m"><div>${tr.credit}</div><div>${tr.maxLoss}</div><div><b>When:</b> ${tr.when}</div><div><b>Exit:</b> ${tr.exit}</div></div>` : '';
+    $('#simpleWhy').innerHTML=s.why.map(t=>`<li>${t}</li>`).join('');
+    $('#simpleRisk').textContent=s.risk;
+    $('#gloss').innerHTML=(s.glossary||DESK.simple?.glossary||[]).map(g=>`<div><b>${g[0]}</b>${g[1]}</div>`).join('');
+  } else {
+    $('#simple').hidden=false; $('#light').className='light'; $('#lightLabel').textContent='No plan written yet'; $('#simpleFor').textContent=label;
+    $('#simpleHeadline').textContent=`The ${label} plan appears here after the next refresh.`; $('#simpleDo').textContent='—'; $('#simpleDont').textContent='—'; $('#simpleStop').textContent='—';
+    $('#trade').innerHTML=''; $('#trade').hidden=true; $('#simpleWhy').innerHTML=''; $('#simpleRisk').textContent=''; $('#gloss').innerHTML='';
+  }
+  // Analyst notes
+  const d=K.current; $('#desk').hidden=!d;
+  if (d){
+    $('#deskFor').textContent=d.for; $('#deskWritten').textContent=d.written;
+    $('#deskStance').textContent=d.stance;
+    $('#deskLines').innerHTML=d.lines.map(t=>`<li>${t}</li>`).join('');
+    $('#deskPlan').innerHTML=d.plan.map(p=>`<dt>${p.label}</dt><dd>${p.text}</dd>`).join('');
+    $('#deskRisk').textContent=d.risk;
+  }
+  // Track record
+  const calls=K.calls||[]; $('#logSec').hidden=!calls.length;
+  if (calls.length){
+    const closed=calls.filter(c=>c.status==='right'||c.status==='wrong'), right=closed.filter(c=>c.status==='right').length;
+    $('#logStat').textContent = closed.length ? `· ${right}/${closed.length} right (${Math.round(100*right/closed.length)}%) · ${calls.filter(c=>c.status==='open').length} open` : `· ${calls.length} open, none resolved yet`;
+    $('#log').innerHTML = [...calls].reverse().map(c=>`<div class="call">
+      <div class="top"><span class="pill ${c.status}">${c.status}</span><span class="num small muted">#${c.id}</span><span class="when num">${c.opened}${c.closed?' → '+c.closed:''}</span></div>
+      <div class="what">${c.call}</div>
+      <div class="why">Why: ${c.trigger}${c.invalidation&&c.invalidation!=='—'?` · Stop: ${c.invalidation}`:''}</div>
+      ${c.result?`<div class="out"><b>Outcome:</b> ${c.result}</div>`:''}</div>`).join('');
+  }
+
+  // Rule-based read
+  const b=$('#bias'); b.textContent=D.bias; b.className='bias '+(/bullish/i.test(D.bias)?'b1':/bearish/i.test(D.bias)?'b-1':'b0');
+  $('#notes').innerHTML = D.notes.map(t=>`<li>${t}</li>`).join('');
+
+  // Expiry tabs
+  cur=PRIMARY;
+  $('#tabs').innerHTML = D.chains.map((c,i)=>`<button class="tab" role="tab" id="tab${i}" aria-selected="${i===cur}">Expiry ${c.expiry}${(c.expiry===stampDay && stampTime>='15:30')?' (expired)':''}</button>`).join('');
+  render();
+
+  // Intraday history sparklines
+  $('#histSec').hidden = !(HIST.length>1);
+  if (HIST.length>1){
+    const spark=(lbl,key,dd=0)=>{
+      const vals=HIST.map(h=>h[key]); const mn=Math.min(...vals), mx=Math.max(...vals), W=220,H=56;
+      const pts=vals.map((v,i)=>`${8+i/(vals.length-1)*(W-16)},${H-8-(mx>mn?(v-mn)/(mx-mn):0.5)*(H-20)}`).join(' ');
+      const last=pts.split(' ').pop().split(',');
+      return `<div class="tile"><div class="lbl">${lbl}</div><div class="val num" style="font-size:18px">${fmt(vals.at(-1),dd)} <span class="small muted">${HIST.at(-1).t}</span></div>
+        <svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto"><polyline points="${pts}" fill="none" stroke="var(--fg)" stroke-width="2"/><circle cx="${last[0]}" cy="${last[1]}" r="3.5" fill="var(--pe)"/>
+        <text x="8" y="${H-1}" font-size="9" fill="var(--faint)">${HIST[0].t}</text><text x="${W-8}" y="${H-1}" text-anchor="end" font-size="9" fill="var(--faint)">lo ${fmt(mn,dd)} · hi ${fmt(mx,dd)}</text></svg></div>`; };
+    $('#hist').innerHTML = spark('Spot','spot',0)+spark('PCR (near expiry)','pcr',2)+spark('India VIX','vix',2)+spark('Max pain','maxPain',0);
+  }
+}
+$('#tabs').addEventListener('click',e=>{const t=e.target.closest('.tab'); if(!t)return; cur=+t.id.slice(3); render();});
+
+function render(){
+  const c=D.chains[cur];
+  document.querySelectorAll('#tabs .tab').forEach((t,i)=>t.setAttribute('aria-selected',i===cur));
+  const lvTable = rows => `<table>${rows.map(r=>`<tr><td class="num">${fmt(r.k)}</td><td class="num">${lakh(r.oi)}</td><td class="num">${r.chg>=0?'+':''}${lakh(r.chg)}</td></tr>`).join('')}</table>`;
+  $('#levels').innerHTML = `
+   <div class="lv"><h2 class="pe">Support · biggest put OI</h2>${lvTable(c.support)}</div>
+   <div class="lv"><h2 class="ce">Resistance · biggest call OI</h2>${lvTable(c.resistance)}</div>
+   <div class="lv"><h2 class="pe">Puts added today</h2>${lvTable(c.peAdds)}</div>
+   <div class="lv"><h2 class="ce">Calls added today</h2>${lvTable(c.ceAdds)}</div>`;
+  drawBars('#oiChart', c, r=>r.ce.oi, r=>r.pe.oi, false);
+  drawBars('#chgChart', c, r=>r.ce.chg, r=>r.pe.chg, true);
+  drawChain(c);
+}
+
+function drawBars(sel, c, ceF, peF, signed){
+  const rows=c.rows, W=760, rowH=18, L=70, R=16, top=10;
+  const H=top+rows.length*rowH+16;
+  const mx=Math.max(1,...rows.map(r=>Math.max(Math.abs(ceF(r)),Math.abs(peF(r)))));
+  const half=(W-L-R)/2, mid=L+half;
+  const sc=val=>Math.abs(val)/mx*(half-10);
+  let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${signed?'Change in open interest':'Open interest'} by strike">`;
+  s+=`<line x1="${mid}" x2="${mid}" y1="${top}" y2="${H-14}" stroke="var(--line)"/>`;
+  rows.forEach((r,i)=>{
+    const y=top+i*rowH, ce=ceF(r), pe=peF(r);
+    // puts to the left of mid, calls to the right (unwinding flips toward the centre line on the signed chart)
+    const pw=sc(pe), cw=sc(ce);
+    const px = mid-pw, cx = mid;   // puts always left, calls always right; unwinding shown faded
+    s+=`<text x="${L-8}" y="${y+13}" text-anchor="end" font-size="11" font-family="var(--mono)" fill="${r.k===c.atm?'var(--fg)':'var(--muted)'}" font-weight="${r.k===c.atm?600:400}">${r.k}</text>`;
+    s+=`<rect data-tip="${r.k} PE  OI ${lakh(r.pe.oi)}  Δ ${r.pe.chg>=0?'+':''}${lakh(r.pe.chg)}  LTP ${r.pe.ltp}" x="${px}" y="${y+2}" width="${pw}" height="${rowH-5}" rx="2" fill="var(--pe)" opacity="${signed&&pe<0?.45:1}"/>`;
+    s+=`<rect data-tip="${r.k} CE  OI ${lakh(r.ce.oi)}  Δ ${r.ce.chg>=0?'+':''}${lakh(r.ce.chg)}  LTP ${r.ce.ltp}" x="${cx}" y="${y+2}" width="${cw}" height="${rowH-5}" rx="2" fill="var(--ce)" opacity="${signed&&ce<0?.45:1}"/>`;
+  });
+  // spot marker: interpolate between strikes
+  const ks=rows.map(r=>r.k); const i=ks.findIndex(k=>k>=c.spot);
+  if(i>0){ const y=top+(i-1+(c.spot-ks[i-1])/(ks[i]-ks[i-1]))*rowH+rowH/2;
+    s+=`<line x1="${L-4}" x2="${W-R}" y1="${y}" y2="${y}" stroke="var(--spot)" stroke-dasharray="3 3"/><text x="${W-R}" y="${y-3}" text-anchor="end" font-size="10" fill="var(--fg)" font-family="var(--mono)">spot ${fmt(c.spot,0)}</text>`; }
+  s+=`<text x="${L}" y="${H-2}" font-size="10" fill="var(--faint)">◀ puts · max ${lakh(mx)}</text><text x="${W-R}" y="${H-2}" text-anchor="end" font-size="10" fill="var(--faint)">calls ▶</text></svg>`;
+  $(sel).innerHTML=s;
+}
+
+function drawChain(c){
+  const h=`<tr><th class="ceh">Bias</th><th class="ceh">CE OI</th><th class="ceh">Δ OI</th><th class="ceh">IV</th><th class="ceh">LTP</th><th class="k">Strike</th><th class="peh">LTP</th><th class="peh">IV</th><th class="peh">Δ OI</th><th class="peh">PE OI</th><th class="peh">Bias</th></tr>`;
+  const body=c.rows.map(r=>{
+    const ceW = r.ce.chg>r.pe.chg, atm=r.k===c.atm;
+    return `<tr class="${atm?'atm':''}">
+      <td class="b ${ceW?'w':''}">${r.ce.b}</td><td class="num ${r.k<c.spot?'itm':''}">${lakh(r.ce.oi)}</td><td class="num ${r.k<c.spot?'itm':''}">${r.ce.chg>=0?'+':''}${lakh(r.ce.chg)}</td><td class="num ${r.k<c.spot?'itm':''}">${r.ce.iv||'—'}</td><td class="num ${r.k<c.spot?'itm':''}">${fmt(r.ce.ltp,2)}</td>
+      <td class="k num">${r.k}</td>
+      <td class="num ${r.k>c.spot?'itm':''}">${fmt(r.pe.ltp,2)}</td><td class="num ${r.k>c.spot?'itm':''}">${r.pe.iv||'—'}</td><td class="num ${r.k>c.spot?'itm':''}">${r.pe.chg>=0?'+':''}${lakh(r.pe.chg)}</td><td class="num ${r.k>c.spot?'itm':''}">${lakh(r.pe.oi)}</td><td class="b ${!ceW?'w':''}">${r.pe.b}</td></tr>`;}).join('');
+  $('#chain').innerHTML=h+body;
+}
+
+// Tooltips on bars
+const tip=$('#tip');
+document.addEventListener('mousemove',e=>{const t=e.target.closest('[data-tip]'); if(!t){tip.hidden=true;return;}
+  tip.textContent=t.dataset.tip; tip.hidden=false; tip.style.left=Math.min(e.clientX+12,innerWidth-tip.offsetWidth-8)+'px'; tip.style.top=(e.clientY+14)+'px';});
+document.addEventListener('touchstart',e=>{const t=e.target.closest('[data-tip]'); if(!t){tip.hidden=true;return;} tip.textContent=t.dataset.tip; tip.hidden=false; tip.style.left='16px'; tip.style.top=(e.touches[0].clientY+14)+'px';},{passive:true});
+
+show();
+
+// ---- auto refresh: poll for a newer build and reload when the data stamp changes ----
+(function(){
+  const stampOf = html => (html.match(/"fetchedAt":"([^"]+)"/)||[])[1];
+  const mine = stampOf(document.documentElement.outerHTML) || DATA.fetchedAt;
+  const ageEl = $('#age');
+  function age(){
+    const m = Math.round((Date.now()-new Date(DATA.fetchedAt).getTime())/60000);
+    ageEl.textContent = (m<1?'updated just now':m<60?`updated ${m} min ago`:`updated ${Math.round(m/60)} h ago`) + ' · auto-refreshes';
+  }
+  age(); setInterval(age, 30000);
+  async function check(){
+    if (document.hidden) return;
+    try {
+      const r = await fetch(location.pathname + '?v=' + Date.now(), {cache:'no-store'});
+      if (!r.ok) return;
+      const s = stampOf(await r.text());
+      if (s && s !== mine) location.reload();
+    } catch(e) {}
+  }
+  setInterval(check, 120000);
+  document.addEventListener('visibilitychange', ()=>{ if(!document.hidden) check(); });
+})();
+</script>
