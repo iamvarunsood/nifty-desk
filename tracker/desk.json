@@ -1,43 +1,43 @@
 {
   "current": {
-    "written": "18-Nov-2026 14:45",
-    "for": "Rest of Wednesday 18-Nov-2026 (23-Nov weekly)",
-    "stance": "Rest of Wednesday: 25,100–25,350 box, no lean; buy a dip to 25,180–25,220, sell only a stall at 25,300–25,340.",
+    "written": "18-Nov-2026 15:14",
+    "for": "Thursday 19-Nov-2026 (23-Nov weekly)",
+    "stance": "Thursday: 25,050–25,400 box, lean down; sell a bounce to 25,300–25,350, buy only a dip to 25,050–25,100.",
     "lines": [
-      "Unchanged: 25,100–25,350 box, no lean. Nifty flat at 25,239 since 14:14; call writers kept covering (25,200 CE −16K, 25,400 CE −13K) while put writers added 12K at 25,250, so the pin near 25,250 firms. Max pain 25,150.",
-      "Ceiling (23-Nov): 25,300 CE 144K (−11K since 14:14) and 25,400 CE 150K (−13K) are the walls; 25,500 CE 212K (+6K) the hard lid; 25,200 CE 99K (−16K) is fading. Today's call adds 822K versus 359K puts, down from 911K.",
-      "Floor (23-Nov): 25,200 PE 123K (−1K) sits under spot; 25,250 PE 62K (+12K since 14:14) is the fastest build; 25,300 PE 86K (+2K); 25,100 PE 74K (+4K); 25,000 PE 177K (flat) is the week's floor.",
-      "Flow: PCR 0.85 from 0.81, near-spot 0.78 from 0.73. Put IV 14.4 vs call 13.9: skew 0.4 vols, from 0.7. VIX 15.75 (+1.5%). Below 25,000, 24,900 PE 69K. No futures print.",
-      "Next expiry (01-Dec): PCR 0.78, max pain 25,300. 25,300 CE 16K (+8.3K) the biggest add; 25,500 CE 26K the wall; 25,200 PE 12.6K (+8.4K) and 25,300 PE 15.2K (+5.9K) the near floors; 25,000 PE 18.7K. Straddle 536 → ±455.",
-      "Pricing: 25,250 straddle 332 → ±282 by Monday, about ±150 a session, so 25,090–25,390 is today's priced range. The 25,400/25,500 call spread pays ≈32 (104−72) with 161 points of room; breakeven 25,432."
+      "Changed: lean turns down from the 14:45 no-lean. Nifty closed 25,217, down 170, near the 25,142 low; today's call writing 741K is 2.4x put writing 307K, max pain 25,100 sits below spot, and both sides trimmed into the close.",
+      "Ceiling (23-Nov): 25,300 CE 130K (+86K today, −14K since 14:45) and 25,400 CE 142K (+70K) are the walls; 25,500 CE 205K (+81K) the hard lid; 25,200 CE 100K (+66K) sits on spot.",
+      "Floor (23-Nov): 25,200 PE 118K (+52K today, −5K since 14:45) is the only floor above 25,100; 25,100 PE 67K (−7K); 25,000 PE 173K (+26K) the week's floor; 24,900 PE 67K (+25K) below it.",
+      "Flow: PCR 0.85 flat, near-spot 0.79 from 0.78. Call IV 14.4 vs put 13.8: calls now dearer by 0.6 vols, so dips are not being hedged. VIX 15.62 (+0.6%). No futures print.",
+      "Next expiry (01-Dec): PCR 0.79, max pain 25,300. 25,300 CE 15.8K (+8.1K) the biggest add; 25,500 CE 26K the wall; 25,200 PE 11.3K (+7.1K) and 25,300 PE 15.2K (+5.9K) the near floors; 25,500 PE 20K. Straddle 533 → ±453.",
+      "Pricing: 25,200 straddle 330 → ±281 by Monday, about ±160 a session, so 25,060–25,380 is Thursday's priced range. The 25,400/25,500 call spread pays ≈30 (98−68) with 183 points of room; breakeven 25,430."
     ],
     "plan": [
       {
         "label": "Sell zone",
-        "text": "25,300–25,340 under 25,300 CE 144K and 25,400 CE 150K, only after a 15-min candle fails to close above 25,340. Cover 25,220; stop on a 15-min close above 25,370."
+        "text": "25,300–25,350 under 25,300 CE 130K and 25,400 CE 142K, only after a 15-min candle fails to close above 25,350. Cover 25,150; stop on a 15-min close above 25,400."
       },
       {
         "label": "Buy zone",
-        "text": "25,180–25,220 against 25,200 PE 123K and 25,250 PE 62K (+12K), after a 15-min hold above 25,180. Target 25,300; stop on a 15-min close under 25,140."
+        "text": "Only 25,050–25,100 against 25,100 PE 67K and 25,000 PE 173K, after a 15-min hold above 25,050. Target 25,200; stop on a 15-min close under 25,030."
       },
       {
         "label": "Target",
-        "text": "Longs from 25,200 → 25,300, half off at 25,260. Shorts from 25,320 → 25,220. Square day trades by 15:25; spreads carry to 23-Nov."
+        "text": "Shorts from 25,320 → 25,150, half off at 25,220. Longs from 25,080 → 25,200. Square day trades by 15:25; the spread carries to 23-Nov."
       },
       {
         "label": "Invalidation",
-        "text": "15-min close above 25,370 → box void; 25,400 CE 150K then 25,500 CE 212K. 15-min close below 25,140 → lean down returns; 25,100 PE 74K then 25,000 PE 177K."
+        "text": "15-min close above 25,400 → lean down void; 25,400 CE 142K then 25,500 CE 205K. 15-min close below 25,030 → no longs; 25,000 PE 173K then 24,900 PE 67K."
       },
       {
         "label": "Structure",
-        "text": "23-Nov bear call spread: sell 25,400 CE (≈104), buy 25,500 CE (≈72). Credit ≈32, risk ≈68, breakeven 25,432. Hold the 10:15 spread (sold ≈34, now ≈32); exit on a 15-min close above 25,370."
+        "text": "23-Nov bear call spread: sell 25,400 CE (≈98), buy 25,500 CE (≈68). Credit ≈30, risk ≈70, breakeven 25,430. Hold the 10:15 spread (sold ≈34, now ≈30); exit on a 15-min close above 25,400."
       },
       {
         "label": "Avoid",
-        "text": "New day trades after 15:00 with 30 minutes left. Buying 25,250 CE (169) or 25,250 PE (164) outright. Naked writes. Shorting into the 25,200 PE 123K floor."
+        "text": "Trading the first 15 minutes; Wednesday's call died in the first half hour. Buying 25,200 CE (185) or 25,200 PE (146) outright. Naked writes. Buying 25,200 just because 25,200 PE 118K sits there."
       }
     ],
-    "risk": "Call writers keep covering while puts build at 25,250, so a pin near 25,250 into the close is likeliest; a late squeeze through 25,370 or a slide under 25,140 is the risk. Record 21-15, 3 open. Paper."
+    "risk": "Call writers outnumber put writers 2.4 to 1 and spot closed 117 above max pain, so a drift to 25,100 is likeliest; a gap either way at the open is the risk. Record 24-15, 1 open. Paper."
   },
   "calls": [
     {
@@ -443,9 +443,9 @@
       "call": "Rest of Wednesday: stay between 25,050 and 25,400, leaning down; sell a bounce to 25,280–25,330, buy only a dip to 25,050–25,100",
       "trigger": "Nifty fell 154 to 25,233, through the 25,240 line; since the open big traders placed 572,000 new bets that it stays under 25,300–25,500, nearly twice the 308,000 bets on the fall side, so the 25,300 floor is now a ceiling",
       "invalidation": "15-min close above 25,360 or below 25,030",
-      "status": "open",
-      "closed": "",
-      "result": ""
+      "status": "right",
+      "closed": "18-Nov 15:30",
+      "result": "Right on the box (readings 25,142–25,274, closed 25,217 at the 3:14 pm reading); the lean down ended flat (25,221 → 25,217, −4 pts); the 25,280–25,330 bounce never came in our readings and the 25,050–25,100 dip never came, no trade"
     },
     {
       "id": 38,
@@ -454,9 +454,9 @@
       "call": "Rest of Wednesday: stay between 25,000 and 25,300, leaning down; sell a bounce to 25,230–25,280, buy only a dip to 25,030–25,100",
       "trigger": "Nifty slid to 25,180, the day's low; in half an hour big traders placed 80,000 new bets that it stays under 25,200 and pulled 38,000 bets that it won't fall, so the ceiling drops to 25,200–25,300",
       "invalidation": "15-min close above 25,320 or below 25,000",
-      "status": "open",
-      "closed": "",
-      "result": ""
+      "status": "right",
+      "closed": "18-Nov 15:30",
+      "result": "Right on the box only (readings 25,168–25,247, closed 25,217): the lean down was wrong, it rose 37 points (25,180 → 25,217); selling the 25,230–25,280 bounce at 2:14 pm made about 30 points by the close; the 25,030–25,100 dip never came"
     },
     {
       "id": 39,
@@ -465,6 +465,17 @@
       "call": "Rest of Wednesday: stay between 25,100 and 25,350, no lean; buy a dip to 25,180–25,220, sell only a stall at 25,300–25,340",
       "trigger": "Nifty bounced 76 to 25,244; in half an hour traders betting it stays under 25,200–25,500 gave up 110,000 bets, while 11,000 new bets came in that it won't fall below 25,200, so the 12:45 lean down is withdrawn",
       "invalidation": "15-min close above 25,370 or below 25,140",
+      "status": "right",
+      "closed": "18-Nov 15:30",
+      "result": "Right: stayed inside the box (readings 25,217–25,247) and closed at 25,217 (−30 pts, 25,247 → 25,217); the 25,180–25,220 dip came only at 3:14 pm, too late to trade before the 3:25 square-off; the 25,300–25,340 stall never came"
+    },
+    {
+      "id": 40,
+      "opened": "18-Nov 15:15",
+      "kind": "Desk view",
+      "call": "Thursday: stay between 25,050 and 25,400, leaning down; sell a bounce to 25,300–25,350, buy only a dip to 25,050–25,100",
+      "trigger": "Nifty fell 170 to 25,217 and closed near the day's low; big traders placed 741,000 new bets today that it won't rise against 307,000 that it won't fall, with 205,000 standing at 25,500 and 130,000 at 25,300",
+      "invalidation": "15-min close above 25,400 or below 25,030",
       "status": "open",
       "closed": "",
       "result": ""
@@ -472,32 +483,32 @@
   ],
   "lot": 65,
   "simple": {
-    "written": "18-Nov-2026 14:45",
-    "for": "Wednesday 18 Nov",
+    "written": "18-Nov-2026 15:14",
+    "for": "Thursday 19 Nov",
     "light": "amber",
-    "lightLabel": "Wait for a dip to 25,200",
-    "headline": "Nifty is sitting at 25,239, down 148 on the day; sellers are easing and buyers are stepping in, so wait and don't chase.",
-    "do": "If you hold the 10:15 spread, keep it. New trade only if Nifty dips to 25,180–25,220 and a full 15-minute candle closes above 25,180; take profit at 25,300, or square by 3:25 pm.",
-    "dont": "Don't buy at 25,239 with 45 minutes left; 144,000 bets say it stays under 25,300. Don't sell short either, 123,000 bets say it won't fall below 25,200.",
-    "stop": "If a 15-minute candle closes above 25,370 or below 25,140, close everything and stay out for the day.",
+    "lightLabel": "Sell a bounce, don't buy",
+    "headline": "Nifty fell 170 to close at 25,217; big traders are betting against a rise, so sell a bounce and don't chase dips.",
+    "do": "Wait for Nifty to rise to 25,300–25,350 and stall there for a full 15-minute candle, then sell; take profit at 25,150, or square by 3:25 pm.",
+    "dont": "Don't buy the open; Wednesday's open-buy lost 90 points in 30 minutes. Don't buy a dip unless a full 15-minute candle holds above 25,050.",
+    "stop": "If a 15-minute candle closes above 25,400 or below 25,030, close everything and stay out for the day.",
     "trade": {
       "name": "Makes money if Nifty stays below 25,400 till Monday 23 Nov",
       "legs": [
-        "SELL 1 lot  Nifty 23-Nov  25,400 CE  at about ₹104",
-        "BUY  1 lot  Nifty 23-Nov  25,500 CE  at about ₹72"
+        "SELL 1 lot  Nifty 23-Nov  25,400 CE  at about ₹98",
+        "BUY  1 lot  Nifty 23-Nov  25,500 CE  at about ₹68"
       ],
-      "credit": "You collect about ₹32 per point × 65 = ₹2,080",
-      "maxLoss": "The most you can lose: ₹4,420 (68 points × 65)",
-      "when": "These are 2:45 pm prices; they will move. If you sold the 10:15 spread for about ₹34, keep it, it is worth ₹32 now. If you sold the 1:45 pm 25,300/25,400 spread, keep it too; it is about 8 points against you.",
-      "exit": "Close both legs if a 15-minute candle closes above 25,370, or once you have kept half of the ₹2,080."
+      "credit": "You collect about ₹30 per point × 65 = ₹1,950",
+      "maxLoss": "The most you can lose: ₹4,550 (70 points × 65)",
+      "when": "These are Wednesday 3:14 pm prices; Thursday's open will differ. If you sold Wednesday's 10:15 spread for about ₹34, keep it, it is worth ₹30. New entry only after a bounce stalls under 25,350 for 15 minutes.",
+      "exit": "Close both legs if a 15-minute candle closes above 25,400, or once you have kept half of the ₹1,950."
     },
     "why": [
-      "Traders who had bet Nifty won't rise have given up 89,000 bets since 2:15 pm, which is why the fall has stopped; so we stay neutral, not bearish.",
-      "Big traders placed 12,000 new bets in half an hour that it won't fall below 25,250, building a floor right under the price; that is where you buy.",
-      "The biggest bet against a rise nearby, 144,000 contracts, says it stays under 25,300, so a rise there usually stalls; don't buy up there.",
-      "Option prices point to a move of about 150 points either way per day, so 25,100 to 25,350 covers the rest of today."
+      "Big traders placed 741,000 new bets today that Nifty won't rise, more than twice the bets that it won't fall; that is why we lean down.",
+      "The biggest bet against a rise nearby, 205,000 contracts, says it stays under 25,500; that is why the trade sells 25,400.",
+      "Big traders hold 173,000 bets that it won't fall below 25,000, so a drop usually slows there; take profit well before it.",
+      "Option prices point to a move of about 160 points either way per day, so 25,050 to 25,400 covers Thursday."
     ],
-    "risk": "Trade one lot only. ₹4,420 is the most you can lose, about twice the ₹2,080 you collect, so honour the 25,370 stop. A late rise above 25,400 is the danger. Paper-trade two weeks before real money.",
+    "risk": "Trade one lot only. ₹4,550 is the most you can lose, more than twice the ₹1,950 you collect, so honour the 25,400 stop. A gap-up open is the danger. Paper-trade two weeks before real money.",
     "glossary": [
       [
         "PE / put option",
@@ -531,72 +542,72 @@
   },
   "bank": {
     "current": {
-      "written": "18-Nov-2026 14:45",
-      "for": "Rest of Wednesday 18-Nov-2026 (23-Nov monthly)",
-      "stance": "Rest of Wednesday: 61,500–62,400 box, lean down; sell a stall at 62,000–62,150, buy only 61,550–61,700.",
+      "written": "18-Nov-2026 15:14",
+      "for": "Thursday 19-Nov-2026 (23-Nov monthly)",
+      "stance": "Thursday: 61,300–62,400 box, lean down; sell a bounce to 62,050–62,200, buy only a dip to 61,350–61,500.",
       "lines": [
-        "Unchanged: 61,500–62,400 box, lean down. Since 14:14 Bank Nifty slipped 65 to 62,024, back under the sell zone; 62,000 CE trimmed 1.1K while 62,000 PE added 2.2K, so the lean softens further. Max pain 60,100.",
-        "Ceiling (23-Nov): 62,000 CE 37.3K (−1.1K since 14:14) still the lid and the day's biggest add (+16.7K); 62,100 CE 10.0K (+1.0K) and 62,300 CE 15.0K the steps; 62,500 CE 29.6K and 63,000 CE 29.5K the walls.",
-        "Floor (23-Nov): 62,000 PE 30.9K (+2.2K since 14:14) now on spot; 61,800 PE 7.7K and 61,900 PE 7.2K the near steps; 61,500 PE 17.3K; 61,000 PE 37.2K (−1.3K) and 60,000 PE 40.3K the real floors.",
-        "Flow: total PCR 1.17 from 1.16, near-spot 0.85 from 0.83. Put IV 17.1 vs call 14.6: skew 2.5 vols, from 2.9. VIX 15.75 (+1.5%). Call adds 75K vs 20K puts today. No futures print.",
-        "December (29-Dec): PCR 1.05, max pain 62,000. 65,000 CE 46.3K is the wall, 63,000 CE 13.6K (+2.7K) the biggest add; 62,000 PE 8.5K (+1.2K) and 62,500 PE 5.1K (+1.5K) the near floors. Straddle 2,539 → ±2,158.",
-        "Pricing: 62,000 straddle 919 → ±781 by 23-Nov, about ±420 a session, so 61,600–62,440 is today's priced range. The 62,300/62,500 call spread pays ≈75 (332−257) with 276 points of room; breakeven 62,375."
+        "Unchanged: lean down, box now 61,300–62,400. Bank Nifty closed 61,951, down 322, back under 62,000; since 14:45 call writers added 1.1K at 62,000 while put writers there cut 1.2K. Max pain 60,000.",
+        "Ceiling (23-Nov): 62,000 CE 38.4K (+17.8K today) is the lid and the day's biggest add; 62,100 CE 9.7K (+7.2K) and 62,200 CE 13.1K (+7.8K) the steps; 62,500 CE 29.2K (+9.3K) and 63,000 CE 30.2K (+9.3K) the walls.",
+        "Floor (23-Nov): 62,000 PE 29.7K (+5.7K today, −1.2K since 14:45) is now overhead; 61,900 PE 7.5K (+3.0K) and 61,800 PE 7.6K (+2.1K) the near steps; 61,500 PE 17.1K; 61,000 PE 36.3K and 60,000 PE 39.7K the real floors.",
+        "Flow: total PCR 1.16 from 1.17, near-spot 0.84 from 0.85. Put IV 17.1 vs call 14.3: skew 2.8 vols, from 2.5. VIX 15.62 (+0.6%). Call adds 76K vs 14K puts today. No futures print.",
+        "December (29-Dec): PCR 1.04, max pain 62,000. 65,000 CE 46.6K is the wall, 63,000 CE 13.7K (+2.8K) the biggest add; 62,000 PE 8.6K (+1.2K) and 62,500 PE 5.1K (+1.5K) the near floors. Straddle 2,519 → ±2,141.",
+        "Pricing: 61,900 straddle 916 → ±779 by 23-Nov, about ±450 a session, so 61,500–62,400 is Thursday's priced range. The 62,300/62,500 call spread pays ≈66 (293−227) with 349 points of room; breakeven 62,366."
       ],
       "plan": [
         {
           "label": "Sell zone",
-          "text": "62,000–62,150 under 62,000 CE 37.3K and 62,100 CE 10.0K, only after a 15-min candle fails to close above 62,150. Cover 61,800; stop on a 15-min close above 62,400."
+          "text": "62,050–62,200 under 62,000 CE 38.4K and 62,200 CE 13.1K, only after a 15-min candle fails to close above 62,200. Cover 61,700; stop on a 15-min close above 62,400."
         },
         {
           "label": "Buy zone",
-          "text": "Only 61,550–61,700 against 61,500 PE 17.3K and 61,000 PE 37.2K, after a 15-min hold above 61,550. Target 61,950; stop on a 15-min close under 61,450."
+          "text": "Only 61,350–61,500 against 61,500 PE 17.1K and 61,000 PE 36.3K, after a 15-min hold above 61,350. Target 61,850; stop on a 15-min close under 61,250."
         },
         {
           "label": "Target",
-          "text": "Shorts from 62,100 → 61,800, half off at 61,950. Longs from 61,600 → 61,950. Square day trades by 15:25; the spread carries to 23-Nov."
+          "text": "Shorts from 62,150 → 61,700, half off at 61,900. Longs from 61,450 → 61,850. Square day trades by 15:25; the spread carries to 23-Nov."
         },
         {
           "label": "Invalidation",
-          "text": "15-min close above 62,400 → lean down void; 62,500 CE 29.6K then 63,000 CE 29.5K. Below 61,450 → no longs; 61,000 PE 37.2K then 60,000 PE 40.3K."
+          "text": "15-min close above 62,400 → lean down void; 62,500 CE 29.2K then 63,000 CE 30.2K. Below 61,250 → no longs; 61,000 PE 36.3K then 60,000 PE 39.7K."
         },
         {
           "label": "Structure",
-          "text": "23-Nov bear call spread: sell 62,300 CE (≈332), buy 62,500 CE (≈257). Credit ≈75, risk ≈125, breakeven 62,375. Hold the 12:15 spread (sold ≈90, now ≈75); exit on a 15-min close above 62,400."
+          "text": "23-Nov bear call spread: sell 62,300 CE (≈293), buy 62,500 CE (≈227). Credit ≈66, risk ≈134, breakeven 62,366. Hold the 12:15 spread (sold ≈90, now ≈66); exit on a 15-min close above 62,400."
         },
         {
           "label": "Avoid",
-          "text": "New day trades after 15:00. Buying 62,000 CE (467) outright. Shorting 62,024 while put writers add 2.2K at 62,000. Keeping any spread on a 15-min close above 62,400."
+          "text": "Trading the first 15 minutes; Wednesday's open fell 440 in half an hour. Buying 62,000 CE (418) outright. Buying 61,951 just because 62,000 PE 29.7K sits there. Naked writes."
         }
       ],
-      "risk": "Put writers are rebuilding at 62,000 while call writers there trim, so the lean down is fading and a close near 62,000 is likeliest; a late squeeze through 62,400 is the danger. Record 11-5, 4 open. Paper only."
+      "risk": "Call writers added 76K today against 14K puts and spot closed under the 62,000 lid, so a drift to 61,500 is likeliest; a gap-up through 62,400 is the danger. Record 15-5, 1 open. Paper only."
     },
     "simple": {
-      "written": "18-Nov-2026 14:45",
-      "for": "Wednesday 18 Nov",
+      "written": "18-Nov-2026 15:14",
+      "for": "Thursday 19 Nov",
       "light": "amber",
-      "lightLabel": "Hold the spread, don't chase",
-      "headline": "Bank Nifty is at 62,024, down 250 on the day; big traders still sell rises here but buyers are returning at 62,000, so wait.",
-      "do": "If you placed the 12:15 spread, hold it. New trade only if Bank Nifty stays below 62,150 for a full 15-minute candle after touching 62,000–62,150; take profit at 61,800 or square by 3:25 pm.",
-      "dont": "Don't buy at 62,024 with 45 minutes left; 37,000 bets say it stays under 62,000. Don't sell before a 15-minute candle fails above 62,150.",
-      "stop": "If a 15-minute candle closes above 62,400, close the trade and stay out of Bank Nifty for the day.",
+      "lightLabel": "Sell a bounce, don't buy",
+      "headline": "Bank Nifty fell 322 to close at 61,951, back under 62,000; big traders keep selling rises there, so sell a bounce, don't buy.",
+      "do": "Wait for Bank Nifty to rise to 62,050–62,200 and stall there for a full 15-minute candle, then sell; take profit at 61,700, or square by 3:25 pm.",
+      "dont": "Don't buy the open; Wednesday's open fell 440 points in half an hour. Don't buy a dip unless a full 15-minute candle holds above 61,350.",
+      "stop": "If a 15-minute candle closes above 62,400 or below 61,250, close everything and stay out of Bank Nifty for the day.",
       "trade": {
         "name": "Makes money if Bank Nifty stays below 62,300 till Monday 23 Nov",
         "legs": [
-          "SELL 1 lot  Bank Nifty 23-Nov  62,300 CE  at about ₹332",
-          "BUY  1 lot  Bank Nifty 23-Nov  62,500 CE  at about ₹257"
+          "SELL 1 lot  Bank Nifty 23-Nov  62,300 CE  at about ₹293",
+          "BUY  1 lot  Bank Nifty 23-Nov  62,500 CE  at about ₹227"
         ],
-        "credit": "You collect about ₹75 per point × 30 = ₹2,250",
-        "maxLoss": "The most you can lose: ₹3,750 (125 points × 30)",
-        "when": "These are 2:45 pm prices; they will move. If you sold the 12:15 spread (62,300/62,500) for about ₹90, keep it, it is now worth ₹75. Otherwise enter only after a bounce stalls under 62,150 for 15 minutes.",
-        "exit": "Close both legs if a 15-minute candle closes above 62,400, or once you have kept half of the ₹2,250."
+        "credit": "You collect about ₹66 per point × 30 = ₹1,980",
+        "maxLoss": "The most you can lose: ₹4,020 (134 points × 30)",
+        "when": "These are Wednesday 3:14 pm prices; Thursday's open will differ. If you sold Wednesday's 12:15 spread for about ₹90, keep it, it is worth ₹66. New entry only after a bounce stalls under 62,200 for 15 minutes.",
+        "exit": "Close both legs if a 15-minute candle closes above 62,400, or once you have kept half of the ₹1,980."
       },
       "why": [
-        "The biggest bet of the day, 37,000 contracts, says Bank Nifty stays under 62,000, so a rise here is where big traders sell; that is your sell zone.",
-        "Big traders placed 2,200 new bets since 2:15 pm that it won't fall below 62,000, so the floor is firmer; don't sell before the bounce stalls.",
-        "Big traders hold 37,000 bets that it won't fall below 61,000, so a drop usually slows there; take profit well before it.",
-        "Option prices point to a move of about 420 points either way today, so 61,800 is reachable from here; that is the take-profit."
+        "The biggest bet of the day, 38,000 contracts, says Bank Nifty stays under 62,000, and it closed just below that line; rises there get sold.",
+        "Big traders placed 76,000 new bets today that it won't rise against 14,000 that it won't fall, so the lean is down.",
+        "Big traders hold 36,000 bets that it won't fall below 61,000, so a drop usually slows there; take profit well before it.",
+        "Option prices point to a move of about 450 points either way per day, so 61,500 to 62,400 covers Thursday."
       ],
-      "risk": "Trade one lot only. ₹3,750 is the most you can lose, more than the ₹2,250 you collect, so honour the 62,400 stop. Bank Nifty moves 400 points in minutes. Paper-trade two weeks before real money.",
+      "risk": "Trade one lot only. ₹4,020 is the most you can lose, about twice the ₹1,980 you collect, so honour the 62,400 stop. Bank Nifty moves 400 points in minutes. Paper-trade two weeks before real money.",
       "glossary": [
         [
           "PE / put option",
@@ -808,9 +819,9 @@
         "call": "Wednesday: stay between 61,700 and 62,800, leaning up; buy a dip to 61,950–62,150, don't sell short before 62,600",
         "trigger": "Bank Nifty is finishing Tuesday up 720 at 62,297 after breaking above 62,000; big traders placed 75,000 new bets today that it won't fall against 6,000 that it won't rise, with 25,000 standing at 62,000",
         "invalidation": "15-min close below 61,750 or above 62,900",
-        "status": "open",
-        "closed": "",
-        "result": ""
+        "status": "right",
+        "closed": "18-Nov 15:30",
+        "result": "Right on the box only (low 61,765, high 62,364, closed 61,951 at the 3:14 pm reading): the lean up was wrong, it fell 322 points (62,273 → 61,951); the 61,950–62,150 dip came at the open and buying it ended about 150 points down; 62,600 never came"
       },
       {
         "id": 18,
@@ -819,9 +830,9 @@
         "call": "Rest of Wednesday: stay between 61,300 and 62,300, leaning down; sell a bounce to 62,000–62,150, buy only a dip to 61,350–61,500",
         "trigger": "Bank Nifty fell 413 to 61,860 and dropped back under 62,000; since the open big traders placed 44,700 new bets that it won't rise, with 10,900 of them at 62,000, against 17,600 on the fall side, so the lean up is withdrawn",
         "invalidation": "15-min close above 62,300 or below 61,250",
-        "status": "open",
-        "closed": "",
-        "result": ""
+        "status": "right",
+        "closed": "18-Nov 15:30",
+        "result": "Right on the box only (readings 61,837–62,240, closed 61,951): the lean down was wrong, it rose 136 points (61,815 → 61,951); selling the 62,000–62,150 bounce at 10:14 am made about 140 points by the close after first going 150 against; the 61,350–61,500 dip never came"
       },
       {
         "id": 19,
@@ -830,9 +841,9 @@
         "call": "Rest of Wednesday: stay between 61,500 and 62,500, no lean; sell a stall at 62,250–62,350, buy only a dip to 61,850–61,950",
         "trigger": "Bank Nifty bounced 376 points from 61,765 to 62,141 and climbed back above 62,000, so the 9:45 lean down is withdrawn; big traders still placed 62,000 new bets today that it won't rise against 26,200 that it won't fall",
         "invalidation": "15-min close above 62,500 or below 61,450",
-        "status": "open",
-        "closed": "",
-        "result": ""
+        "status": "right",
+        "closed": "18-Nov 15:30",
+        "result": "Right: stayed inside the box and closed at 61,951 (−140 pts, 62,091 → 61,951); the 62,250–62,350 sell zone was only brushed (12:15 reading 62,240, day high 62,364); the 61,850–61,950 dip came at 1:16 pm (61,921) and buying it ended about 30 points up"
       },
       {
         "id": 20,
@@ -841,6 +852,17 @@
         "call": "Rest of Wednesday: stay between 61,500 and 62,400, leaning down; sell a bounce to 62,100–62,250, buy only a dip to 61,550–61,700",
         "trigger": "Bank Nifty fell 222 in half an hour to 62,017; big traders pulled 5,000 bets that it won't fall just under 62,000 and placed 1,300 new bets that it stays under 62,000, so the 10:15 no-lean turns down",
         "invalidation": "15-min close above 62,400 or below 61,450",
+        "status": "right",
+        "closed": "18-Nov 15:30",
+        "result": "Right: box held and it leaned down (62,017 → 61,951, −66 pts); the 62,100–62,250 bounce fell 11 short (2:14 pm reading 62,089) and the 61,550–61,700 dip never came, no trade"
+      },
+      {
+        "id": 21,
+        "opened": "18-Nov 15:15",
+        "kind": "Desk view",
+        "call": "Thursday: stay between 61,300 and 62,400, leaning down; sell a bounce to 62,050–62,200, buy only a dip to 61,350–61,500",
+        "trigger": "Bank Nifty fell 322 to 61,951 and closed back under 62,000; big traders placed 76,000 new bets today that it won't rise against 14,000 that it won't fall, with 38,000 of them at 62,000",
+        "invalidation": "15-min close above 62,400 or below 61,250",
         "status": "open",
         "closed": "",
         "result": ""
