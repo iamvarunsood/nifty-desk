@@ -122,6 +122,15 @@ def main():
     out = {"fetchedAt": datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%S.000Z"), **N, "bank": B}
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(json.dumps(out, separators=(",", ":"), ensure_ascii=False))
+    # Compact brief for the analyst run (reads this instead of the full file)
+    def brief(d):
+        if not d: return None
+        cs = []
+        for c in d["chains"]:
+            rows = [r for r in c["rows"] if abs(r["k"] - c["atm"]) <= 5 * (100 if c["spot"] > 40000 else 50)]
+            cs.append({k: c[k] for k in ("expiry","ts","spot","atm","pcr","pcrNear","addCE","addPE","maxPain","resistance","support","ceAdds","peAdds","atmIV","straddle","expMove")} | {"rows": rows})
+        return {"index": d["nifty"], "vix": d["vix"], "fut": d["fut"], "market": d["market"], "bias": d["bias"], "notes": d["notes"], "chains": cs}
+    (OUT.parent / "brief.json").write_text(json.dumps({"fetchedAt": out["fetchedAt"], "nifty": brief(N), "bank": brief(B)}, separators=(",", ":"), ensure_ascii=False))
     print(f"ok {N['chains'][0]['ts']} spot {N['chains'][0]['spot']} bank {'ok' if B else 'none'} fut {fut}")
 
 if __name__ == "__main__":

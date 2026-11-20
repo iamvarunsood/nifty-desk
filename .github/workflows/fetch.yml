@@ -2,7 +2,7 @@ name: fetch-nse
 on:
   workflow_dispatch:
   schedule:
-    - cron: '5,35 3-9 * * 1-5'   # backup only (UTC): ~08:35–15:05 IST; the Claude task dispatches the real runs
+    - cron: '5 4-9 * * 1-5'   # backup only (UTC, hourly): the Claude task dispatches the real runs
 permissions:
   contents: write
 concurrency:
@@ -18,6 +18,6 @@ jobs:
       - run: python tracker/fetch_nse.py
       - run: |
           git config user.name fetch-bot && git config user.email fetch@users.noreply.github.com
-          git add data/data.json
+          git add data/data.json data/brief.json
           git commit -qm "data $(date -u +%H:%M)" || echo "no change"
           for i in 1 2 3; do git pull --rebase -q && git push -q && break || sleep 5; done
