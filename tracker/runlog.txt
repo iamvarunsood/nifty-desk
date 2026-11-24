@@ -41,3 +41,4 @@
 23-Nov 08:50Z | data 23-Nov-2026 14:15 | spot 25421 | fetch refreshed | push PUSHED | add_repo tool absent, used existing checkout
 23-Nov 09:48Z | data 23-Nov-2026 15:16 | spot 25366.4 | fetch refreshed | push PUSHED | clone dir reused (rm blocked); bank call 23 closed wrong
 23-Nov 10:14Z | data 23-Nov-2026 15:41 | spot 25349.65 | fetch refreshed | push PUSHED | artifact republished (close run)
+24-Nov 03:48Z | data 24-Nov-2026 09:16 (chain 23-Nov 15:40) | spot 25349.65 | fetch refreshed | push PUSHED | add_repo tool absent, existing checkout reset to origin; NSE chain still Monday's close, views unchanged, calls 44/25 left open
