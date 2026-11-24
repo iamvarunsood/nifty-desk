@@ -1,10 +1,10 @@
 {
  "current": {
-  "written": "24-Nov-2026 10:16",
+  "written": "24-Nov-2026 11:16",
   "for": "Wednesday 25-Nov-2026 (weekly series, expiry 01-Dec)",
   "stance": "Lean down for Wednesday: 25,000–25,550 range, sell a bounce to 25,480–25,550, buy only a held 25,000.",
   "lines": [
-   "NSE is shut Tuesday (Guru Nanak Jayanti), so this chain is still Monday's 15:40 close at 25,350. Call 44 now applies to Wednesday; the lean down and the 25,000–25,550 box stand until a 15-min candle breaks 25,620 or 24,950.",
+   "NSE is shut Tuesday (Guru Nanak Jayanti); the 11:16 refresh still shows Monday's 15:40 close at 25,350. Call 44 now applies to Wednesday; the lean down and the 25,000–25,550 box stand until a 15-min candle breaks 25,620 or 24,950.",
    "Ceiling (01-Dec): 26,000 CE 130K (+56K) at 62 is the wall; 25,500 CE 70K (+42K) at 199 and 25,800 CE 69K (+40K) at 101 cap bounces. Max pain 25,500 sits 150 above spot.",
    "Floor: 25,000 PE 62K (+22K) at 97 is the first wall; 24,800 PE 57K (+33K) at 56 and 24,500 PE 67K (+28K) at 24 sit below. 24,000 PE 79K (+45K) at 8 is the far wall.",
    "Flows: 01-Dec call writing 379K vs put writing 249K; PCR 0.70, near-spot 0.90. Monday's expired series added 719K calls and unwound 876K puts into the 25,350 settlement.",
@@ -527,7 +527,7 @@
  ],
  "lot": 65,
  "simple": {
-  "written": "24-Nov-2026 10:16",
+  "written": "24-Nov-2026 11:16",
   "for": "Wednesday 25 Nov",
   "light": "amber",
   "lightLabel": "Wait, sell a bounce",
@@ -586,11 +586,11 @@
  },
  "bank": {
   "current": {
-   "written": "24-Nov-2026 10:16",
+   "written": "24-Nov-2026 11:16",
    "for": "Wednesday 25-Nov-2026 (December monthly series, expiry 29-Dec)",
    "stance": "Lean down for Wednesday: 62,000–63,300 range, sell a bounce to 63,000–63,200, buy only a held 62,000.",
    "lines": [
-    "NSE is shut Tuesday (Guru Nanak Jayanti), so this chain is still Monday's 15:40 close at 62,585. Call 25 now applies to Wednesday; the lean down and the 62,000–63,300 box stand until a 15-min candle breaks 63,400 or 61,900.",
+    "NSE is shut Tuesday (Guru Nanak Jayanti); the 11:16 refresh still shows Monday's 15:40 close at 62,585. Call 25 now applies to Wednesday; the lean down and the 62,000–63,300 box stand until a 15-min candle breaks 63,400 or 61,900.",
     "Ceiling (29-Dec): 66,000 CE 44K (+33K) at 373 is the wall; 65,000 CE 38K (−12K) at 603 is unwinding. Nearby, 63,000 CE 19K (+4.5K) at 1,359 and 64,000 CE 19K (+6K) at 938 cap bounces.",
     "Floor: 62,000 PE 14K (flat) at 1,042 is the first wall; 61,500 PE 9K (+4K) at 875 below it; 60,000 PE 17K (+4K) at 506 is the far wall. 63,000 PE 17.5K (+5K) at 1,448 is being bought.",
     "Flows: December call writing 28K vs put writing 19K; PCR 0.82, near-spot 1.12. Max pain 63,000 sits 415 above spot. Monday's expired series wrote 340K calls into the 62,585 settlement, puts −37K.",
@@ -626,7 +626,7 @@
    "risk": "Two days off: a gap past 63,400 or 61,900 on Wednesday's open voids the box before any trade. A 3.2% fall can snap back 600 in an hour; the December chain is thin. Record 16-8, 1 open. Paper."
   },
   "simple": {
-   "written": "24-Nov-2026 10:16",
+   "written": "24-Nov-2026 11:16",
    "for": "Wednesday 25 Nov",
    "light": "amber",
    "lightLabel": "Wait, sell a bounce",
