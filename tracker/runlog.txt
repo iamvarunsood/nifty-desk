@@ -50,3 +50,4 @@
 24-Nov 09:47Z | data 24-Nov-2026 15:16 | spot 25349.65 | fetch refreshed | push PUSHED | holiday, chain unchanged from 23-Nov 15:40, calls 44/25 left open; add_repo tool absent, existing checkout reset; artifact skipped (pre-15:30)
 24-Nov 10:11Z | data 24-Nov-2026 15:41 | spot 25349.65 | fetch refreshed | push PUSHED | holiday, chain unchanged from 23-Nov close; add_repo tool absent, repo already in scope
 25-Nov 03:50Z | data 25-Nov-2026 09:15 | spot 25658 | fetch refreshed | push PUSHED | open-print data, 01-Dec premiums not yet printed
+25-Nov 04:50Z | data 25-Nov-2026 10:14 | spot 25769 | fetch refreshed | push PUSHED | intraday run, artifact skipped
