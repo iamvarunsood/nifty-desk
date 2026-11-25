@@ -52,3 +52,4 @@
 25-Nov 03:50Z | data 25-Nov-2026 09:15 | spot 25658 | fetch refreshed | push PUSHED | open-print data, 01-Dec premiums not yet printed
 25-Nov 04:50Z | data 25-Nov-2026 10:14 | spot 25769 | fetch refreshed | push PUSHED | intraday run, artifact skipped
 25-Nov 05:51Z | data 25-Nov-2026 11:15 | spot 25916 | fetch refreshed | push PUSHED | add_repo tool absent, repo already in scope; workspace synced via fetch/reset instead of rm+clone
+25-Nov 06:50Z | data 25-Nov-2026 12:15 | spot 25897 | fetch refreshed | push PUSHED | intraday run, artifact skipped; add_repo tool absent, repo already in scope; workspace synced via fetch/reset
