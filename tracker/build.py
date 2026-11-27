@@ -20,6 +20,14 @@ if not hist['points'] or hist['points'][-1]['t'] != t:
 if data.get('bank') and (not hist['bank'] or hist['bank'][-1]['t'] != t):
     hist['bank'].append(pt(data['bank']['chains'][0], data['vix']['last']))
 hist_p.write_text(json.dumps(hist))
+
+# Daily open/high/low/close log (feeds the trend check in desk_brief.py); today's row is updated on every run
+daily_p = root/'daily.json'
+daily = json.loads(daily_p.read_text()) if daily_p.exists() else []
+q = lambda n: {k: (n or {}).get(k) for k in ('open', 'high', 'low', 'last')}
+row = {'date': day, 'nifty': q(data['nifty']), 'bank': q((data.get('bank') or {}).get('nifty'))}
+daily = [d for d in daily if d['date'] != day] + [row]
+daily_p.write_text(json.dumps(daily[-30:], indent=0))
 history_obj = {'nifty': hist['points'], 'bank': hist['bank']}
 
 desk_p = root/'desk.json'

@@ -1,0 +1,9 @@
+{
+ "lessons": [
+  "Range calls failed on trend days (3, 5, 6, 17 Nov up; 23 Nov down): option walls are where price may stall, not a fence. Never lean against the trend printed by desk_brief.py; when a wall breaks, follow the break.",
+  "Flip-flopping lost money (17 Nov: 11 calls in a day; 25-26 Nov lean flipped up/down/up). One call per session, changed only when its stop is hit; at most one replacement, then stay out.",
+  "Stops 60-100 points away were hit by normal noise while direction was right. Stops and range edges are sized from dayMove (min_stop, min_half_range in desk_brief.py), never tighter.",
+  "'Right on the box only' flattered the record. A call with a lean is right only if the lean paid."
+ ],
+ "days": []
+}
