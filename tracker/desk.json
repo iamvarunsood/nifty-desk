@@ -1,43 +1,43 @@
 {
  "current": {
-  "written": "26-Nov-2026 15:39",
+  "written": "27-Nov-2026 09:15",
   "for": "Friday 27-Nov-2026 (weekly expiry 01-Dec)",
-  "stance": "Range 25,750–26,050, lean up while 25,840 holds; buy dips to 25,820–25,860, sell only a stall at 26,000–26,040.",
+  "stance": "Range 25,750–26,050, lean up while 25,840 holds; buy the dip only after a 15-min close above 25,860, sell only a stall at 26,000–26,040.",
   "lines": [
-   "Changed: the close turned the lean up; in the last 25 minutes writers added 48K puts and unwound 60K calls, so day adds read 468K puts against 251K calls. Call 53 closes right; call 54 opens with range 25,750–26,050, lean up while 25,840 holds.",
-   "Ceiling (01-Dec): 26,000 CE 168.5K (+36.7K) caps 115 above spot, 7K lighter than at 15:15. 26,100 CE 61K and 26,150 CE 44.5K thinned 5K and 3K. 25,900 CE 95.5K shed 12K into the close and still tags as buying.",
-   "Floor: 25,900 PE 75.5K (+48K) is written 16 above spot, in the money, and 25,800 PE 88K (+20.6K) holds 85 below, 15K lighter. 25,600 PE 94.5K (+41K) and 25,500 PE 119K back it. ITM calls covered: 25,800 CE −15K, 25,700 CE −11K. Max pain 25,800.",
-   "Flows: 01-Dec PCR 1.03 from 0.98 at 15:15; day adds 468K puts against 251K calls, the widest gap of the day. 08-Dec PCR 1.10 with adds 53K puts against 33K calls, 26,000 CE 26.6K the cap, max pain 25,800.",
-   "Pricing: 25,900 straddle 353 implies ±300 by Tuesday, so 25,584–26,185. ATM IV 16.0 call vs 13.4 put, skew widened from 15.1/14.0; calls are bid for the 26,000 test. VIX 16.85, down 4.7%. No futures print.",
-   "Carry: 01-Dec iron condor: sell 25,800 PE (117) and 26,000 CE (146), buy 25,650 PE (71) and 26,150 CE (89). Credit ≈103, risk 47, breakevens 25,697 and 26,103. The 15:15 condor is 1 point in profit; same 25,780/26,080 exits."
+   "Unchanged: Nifty opened 25,839, down 45, inside the 25,820–25,860 buy zone and on the 25,840 lean line. Call 54 stays open: range 25,750–26,050, lean up while 25,840 holds on a 15-min close.",
+   "Ceiling (01-Dec): 26,000 CE 167.4K caps 140 above spot, 1K lighter than the close. 26,100 CE 60.3K and 25,900 CE 94.2K sit beneath it. Opening adds are zero; the first OI prints land at 09:30.",
+   "Floor: 25,800 PE 85.2K holds 40 below the open, 3K lighter than the close; 25,900 PE 75.8K is now in the money. 25,700 PE 72.5K and 25,600 PE 94.5K back it. Max pain 25,800, 40 under spot.",
+   "Flows: 01-Dec PCR 1.03, flat from the close; near-strike PCR 0.97. 08-Dec PCR 1.11 with 26,000 CE 26.3K the cap and max pain 25,800; next week's book leans the same way.",
+   "Pricing: 25,850 straddle 356 implies ±302 by Tuesday, so 25,560–26,165. ATM IV 20.3 call vs 13.1 put, an opening-print skew; 25,850 parity puts the forward near 25,811, 50 under the chain spot. VIX 16.84. No futures print.",
+   "Carry: 01-Dec iron condor: sell 25,750 PE (148) and 26,000 CE (100), buy 25,600 PE (91) and 26,100 CE (71). Credit ≈86, risk 64, breakevens 25,664 and 26,086. Thursday's 25,800/26,000 condor is about 6 points under water on the gap."
   ],
   "plan": [
    {
     "label": "Buy zone",
-    "text": "25,820–25,860 against 25,800 PE 88K and 25,850 PE 31K, only after a 15-min candle closes back above 25,860. Target 26,000; stop on a 15-min close under 25,780."
+    "text": "25,820–25,860 against 25,800 PE 85.2K, only after a 15-min candle closes back above 25,860. Target 26,000; stop on a 15-min close under 25,780."
    },
    {
     "label": "Sell zone",
-    "text": "26,000–26,040 under 26,000 CE 168.5K, only after a 15-min candle fails to close above 26,050. Target 25,900; stop on a 15-min close above 26,080. Smaller size; the lean is against it."
+    "text": "26,000–26,040 under 26,000 CE 167.4K, only after a 15-min candle fails to close above 26,050. Target 25,900; stop on a 15-min close above 26,080. Smaller size; the lean is against it."
    },
    {
     "label": "Target",
-    "text": "Longs from 25,840 → 26,000, half off at 25,950 where 26,000 CE 168.5K starts to bite. Shorts from 26,020 → 25,900. Flat between 25,860 and 25,990; max pain 25,800 drags into Tuesday."
+    "text": "Longs from 25,840 → 26,000, half off at 25,950. Shorts from 26,020 → 25,900. Flat between 25,860 and 25,990 unless the 09:30 candle sets the direction."
    },
    {
     "label": "Invalidation",
-    "text": "15-min close below 25,780 → lean up is wrong, 25,733 low then 25,600 PE 94.5K; no longs. 15-min close above 26,080 → 26,000 writers cover, 26,100 CE 61K then 26,500 CE 146K; no shorts."
+    "text": "15-min close below 25,780 → lean up is wrong, 25,733 low then 25,600 PE 94.5K; no longs. 15-min close above 26,080 → 26,100 CE 60.3K then 26,500 CE 146.7K; no shorts."
    },
    {
     "label": "Structure",
-    "text": "01-Dec iron condor: sell 25,800 PE (≈117) and 26,000 CE (≈146), buy 25,650 PE (≈71) and 26,150 CE (≈89). Credit ≈103, risk ≈47. Enter 25,850–25,950; exit on a 15-min close past 25,780 or 26,080."
+    "text": "01-Dec iron condor: sell 25,750 PE (≈148) and 26,000 CE (≈100), buy 25,600 PE (≈91) and 26,100 CE (≈71). Credit ≈86, risk ≈64. Enter 25,820–25,950; exit on a 15-min close past 25,780 or 26,080."
    },
    {
     "label": "Avoid",
-    "text": "Buying 25,884 at the open; wait for the dip or the 26,000 test. Buying the 26,000 call against 168.5K writers. Any naked option; the 25,900 straddle costs 353."
+    "text": "Buying the first candle at 25,839; let 09:30 close above 25,860 first. Buying the 26,000 call against 167.4K writers. Any naked option; the 25,850 straddle costs 356."
    }
   ],
-  "risk": "Two leans up failed today before the close turned; size half and demand the 15-min confirmation. Condor shorts sit inside the ±300 implied move; a close past 25,780 or 26,080 costs about 25 points. Record 28-25. Paper."
+  "risk": "The gap opened on the 25,840 line; a 09:30 close under 25,780 ends the lean up. Condor shorts sit inside the ±302 implied move; a close past either stop costs about 25 points. Record 28-25. Paper."
  },
  "calls": [
   {
@@ -637,34 +637,34 @@
  ],
  "lot": 65,
  "simple": {
-  "written": "26-Nov-2026 15:39",
+  "written": "27-Nov-2026 09:15",
   "for": "Friday 27 Nov",
   "light": "green",
-  "lightLabel": "Buy dips near 25,840 only",
-  "headline": "Nifty closed at 25,884, up a little, and big traders spent the last half hour betting it won't fall; buy a dip, don't chase.",
-  "do": "If Nifty dips to 25,820–25,860 and a 15-minute candle then closes back above 25,860, buy, aiming for 26,000. Otherwise do nothing between 25,860 and 25,990.",
-  "dont": "Don't buy at the open near 25,884; wait for the dip. Don't chase a break above 26,000; 168,000 bets sit against it. No outright options.",
+  "lightLabel": "Buy the dip only after 09:30",
+  "headline": "Nifty opened at 25,839, down 45, right at the buy zone; wait for the first 15-minute candle to close above 25,860 before buying.",
+  "do": "If a 15-minute candle closes above 25,860 while Nifty trades 25,820–25,860, buy, aiming for 26,000. Otherwise do nothing between 25,860 and 25,990.",
+  "dont": "Don't buy the opening candle at 25,839. Don't chase a break above 26,000; 167,000 bets sit against it. No outright options.",
   "stop": "A 15-minute candle closing below 25,780 means stay out; the floor and the lean are gone. Above 26,080, no selling.",
   "trade": {
-   "name": "Makes money if Nifty stays between 25,700 and 26,100 till Tuesday 1 Dec",
+   "name": "Makes money if Nifty stays between 25,700 and 26,050 till Tuesday 1 Dec",
    "legs": [
-    "SELL 1 lot  Nifty 1-Dec  25,800 PE  at about ₹117",
-    "BUY 1 lot  Nifty 1-Dec  25,650 PE  at about ₹71",
-    "SELL 1 lot  Nifty 1-Dec  26,000 CE  at about ₹146",
-    "BUY 1 lot  Nifty 1-Dec  26,150 CE  at about ₹89"
+    "SELL 1 lot  Nifty 1-Dec  25,750 PE  at about ₹148",
+    "BUY 1 lot  Nifty 1-Dec  25,600 PE  at about ₹91",
+    "SELL 1 lot  Nifty 1-Dec  26,000 CE  at about ₹100",
+    "BUY 1 lot  Nifty 1-Dec  26,100 CE  at about ₹71"
    ],
-   "credit": "You collect about ₹103 per point × 65 = ₹6,695",
-   "maxLoss": "The most you can lose: ₹3,055 (47 points × 65)",
-   "when": "Friday morning, any time Nifty sits between 25,850 and 25,950. Skip it if a 15-minute candle has already closed below 25,780 or above 26,080.",
-   "exit": "Close all four legs if a 15-minute candle closes below 25,780 or above 26,080 (loss about ₹1,600), or when the set is worth about ₹40 (profit about ₹4,100)."
+   "credit": "You collect about ₹86 per point × 65 = ₹5,590",
+   "maxLoss": "The most you can lose: ₹4,160 (64 points × 65)",
+   "when": "Friday morning after 09:30, any time Nifty sits between 25,820 and 25,950. Skip it if a 15-minute candle has already closed below 25,780 or above 26,080.",
+   "exit": "Close all four legs if a 15-minute candle closes below 25,780 (loss about ₹1,800) or above 26,080 (about flat), or when the set is worth about ₹35 (profit about ₹3,300)."
   },
   "why": [
-   "In the last half hour big traders added about 48,000 bets that Nifty won't fall, and cut their bets that it won't rise; that is why the lean is up.",
-   "The biggest pile of bets, about 168,000, says Nifty stays under 26,000; that is the ceiling, and the reason not to chase a rise.",
-   "Big traders have bet about 88,000 contracts that it won't fall below 25,800; that is the floor the dip should bounce from.",
-   "This trade pays if Nifty stays between 25,700 and 26,100, a 400-point band; the options market expects a move of about 300 points by Tuesday."
+   "Nifty opened 45 points lower at 25,839, landing exactly where yesterday's plan said to buy; the plan only works if the first candle holds above 25,860.",
+   "Big traders have bet about 85,000 contracts that it won't fall below 25,800; that is the floor the dip should bounce from.",
+   "The biggest pile of bets, about 167,000, says Nifty stays under 26,000; that is the ceiling, and the reason not to chase a rise.",
+   "This trade pays if Nifty stays between 25,700 and 26,050; the options market expects a move of about 300 points by Tuesday."
   ],
-  "risk": "The most you can lose is ₹3,055 per lot if Nifty closes beyond 25,650 or 26,150 on Tuesday; exit earlier at 25,780 or 26,080 for about ₹1,600. Paper-trade two weeks before real money.",
+  "risk": "The most you can lose is ₹4,160 per lot if Nifty closes below 25,600 on Tuesday; exit earlier at 25,780 or 26,080 for about ₹1,800. Paper-trade two weeks before real money.",
   "glossary": [
    [
     "PE / put option",
@@ -698,16 +698,16 @@
  },
  "bank": {
   "current": {
-   "written": "26-Nov-2026 15:39",
+   "written": "27-Nov-2026 09:15",
    "for": "Friday 27-Nov-2026 (monthly expiry 29-Dec)",
    "stance": "Range 63,000–64,000, no lean between 63,350 and 63,850; sell a stall under 64,000, buy only a dip holding 63,000.",
    "lines": [
-    "Unchanged: Bank Nifty closed 63,535, down 168 on the day and 52 under the 15:15 print; the band 63,000–64,000 held and both sides kept writing into the close. Call 31 stays open with no lean.",
-    "Ceiling (29-Dec): 64,000 CE 26.3K (+4.2K) caps 465 above spot, 0.5K lighter than at 15:15; 64,000 PE 19.6K (+4.7K) written against it keeps 64,000 a pin. 65,000 CE 38.1K and 66,000 CE 50.7K sit above.",
-    "Floor: 63,500 PE 11.6K (+0.5K) sits at max pain 63,500, 35 below spot, with 63,500 CE 13.0K written against it. 63,000 PE 19.6K (−60) is the wall, 535 below. 63,000 CE 16.6K shed 0.6K as longs unwound.",
-    "Flows: December PCR 0.88, unchanged; day adds 9.5K puts against 6.9K calls, from 11.8K and 9.3K at 15:15, so both sides unwound into the close. Writing at every strike 63,400–64,000 both ways. January PCR 1.17, max pain 62,500.",
-    "Pricing: 63,500 straddle 2,684 implies ±2,281 by 29-Dec, so 61,254–65,816. ATM IV 17.2 call vs 17.9 put, skew narrowing from 17.0/18.2 at 15:15; put protection is being sold. VIX 16.85, down 4.7%. No futures print.",
-    "Carry: 29-Dec 64,000/65,000 bear call spread pays ≈437 (1,253−816) for 563 of risk, breakeven 64,437, above the 64,000 pin. The 14:15 entry (≈402) is 35 under water and keeps its 63,800 exit; fresh entries exit at 64,100."
+    "Unchanged: Bank Nifty opened 63,326, down 209, just under the 63,350–63,850 do-nothing band and 26 above the 63,100–63,300 buy zone. Call 31 stays open: range 63,000–64,000, no lean.",
+    "Ceiling (29-Dec): 64,000 CE held 26.3K at the close and has no 09:15 print; 65,000 CE 38.1K and 66,000 CE 50.7K sit above, both unchanged. 63,500 CE 13.0K is now 110 in the money.",
+    "Floor: 63,000 PE 19.6K is the wall, 326 below the open, unchanged. 63,500 PE 11.6K sits at max pain 63,500, 174 above spot, so the pin pulls up. 60,000 PE 22.5K is the far floor.",
+    "Flows: December PCR 0.87 from 0.88, near-strike 0.93; no OI adds print until 09:30. January PCR 1.17, max pain 62,500, 65,000 CE 4.5K the cap.",
+    "Pricing: the 63,400 straddle shows only its put leg, 1,216, at 09:15; the call has no print, so Thursday's ±2,281 stands. ATM IV 19.1 call vs 17.0 put, calls bid at the open. VIX 16.84. No futures print.",
+    "Carry: 29-Dec 64,000/65,000 bear call spread: 65,000 CE prints 736; 64,000 CE sits between 63,500 CE 1,389 and that, about 1,150. Credit ≈414, risk 586, breakeven 64,414. Thursday's entry (≈437) is about 23 in profit."
    ],
    "plan": [
     {
@@ -720,50 +720,50 @@
     },
     {
      "label": "Target",
-     "text": "Longs from 63,200 → 63,800, half off at 63,500 max pain. Shorts from 63,950 → 63,500. Flat between 63,350 and 63,850; spot 63,535 is in that band now."
+     "text": "Longs from 63,200 → 63,800, half off at 63,500 max pain. Shorts from 63,950 → 63,500. Flat between 63,350 and 63,850; the open at 63,326 sits 26 under that band."
     },
     {
      "label": "Invalidation",
-     "text": "15-min close above 64,100 → 64,000 writers cover, the 64,105 day high then 65,000 CE 38.1K; no shorts. 15-min close below 62,950 → the 62,585 gap then 62,500 PE 7.2K; no longs."
+     "text": "15-min close below 62,950 → the 62,585 gap then 62,500 PE 7.2K; no longs. 15-min close above 64,100 → 64,000 writers cover, the 64,105 high then 65,000 CE 38.1K; no shorts."
     },
     {
      "label": "Structure",
-     "text": "29-Dec bear call spread: sell 64,000 CE (≈1,253), buy 65,000 CE (≈816). Credit ≈437, risk ≈563, breakeven 64,437. Enter on a bounce to 63,850–64,000; exit on a 15-min close above 64,100."
+     "text": "29-Dec bear call spread: sell 64,000 CE (≈1,150), buy 65,000 CE (≈736). Credit ≈414, risk ≈586, breakeven 64,414. Enter on a bounce to 63,850–64,000; exit on a 15-min close above 64,100."
     },
     {
      "label": "Avoid",
-     "text": "Shorting 63,535 in the middle of the band; today's two leans both failed. Buying the 64,000 call for a breakout against 26.3K writers. Any naked option; the 63,500 straddle costs 2,684."
+     "text": "Buying the opening candle at 63,326 before 09:30; it is 26 under the band, not in the buy zone. Buying the 64,000 call against 26.3K writers. Any naked option; one leg costs over 1,000."
     }
    ],
-   "risk": "Monthly options move ₹30 a point; the spread loses about 80 points (₹2,400) on a 15-min close above 64,100. Two leans failed today; wait for the edges. Record 16-14. Paper."
+   "risk": "Monthly options move ₹30 a point; the spread loses about 80 points (₹2,400) on a 15-min close above 64,100. A 09:30 close under 63,300 opens the buy zone, not a short. Record 16-14. Paper."
   },
   "simple": {
-   "written": "26-Nov-2026 15:39",
+   "written": "27-Nov-2026 09:15",
    "for": "Friday 27 Nov",
    "light": "amber",
-   "lightLabel": "Wait; sell near 64,000 only",
-   "headline": "Bank Nifty closed at 63,535, still stuck between 63,000 and 64,000; wait for it to reach an edge before doing anything.",
-   "do": "Do nothing between 63,350 and 63,850. If Bank Nifty climbs to 63,900–64,000 and a 15-minute candle fails to close above 64,000, place the trade below, aiming for 63,500.",
-   "dont": "Don't buy or sell at 63,535; it is the middle of the band. Don't chase a break above 64,000; it has failed four times. No outright options.",
-   "stop": "A 15-minute candle closing above 64,100 means stay out; the sellers at 64,000 have given up.",
+   "lightLabel": "Wait for 63,200 or 64,000",
+   "headline": "Bank Nifty opened at 63,326, down 209, still inside its 63,000–64,000 band; wait for it to reach an edge before doing anything.",
+   "do": "Do nothing between 63,350 and 63,850. If it dips to 63,100–63,300 and a 15-minute candle closes back above 63,300, buy, aiming for 63,800. Near 64,000, place the trade below.",
+   "dont": "Don't sell the opening dip at 63,326; the floor at 63,000 is close. Don't chase a break above 64,000; it has failed four times. No outright options.",
+   "stop": "A 15-minute candle closing below 62,950 means stay out of buys; above 64,100, stay out of sells.",
    "trade": {
     "name": "Makes money if Bank Nifty stays under 64,000 by 29 Dec",
     "legs": [
-     "SELL 1 lot  Bank Nifty 29-Dec  64,000 CE  at about ₹1,253",
-     "BUY 1 lot  Bank Nifty 29-Dec  65,000 CE  at about ₹816"
+     "SELL 1 lot  Bank Nifty 29-Dec  64,000 CE  at about ₹1,150",
+     "BUY 1 lot  Bank Nifty 29-Dec  65,000 CE  at about ₹736"
     ],
-    "credit": "You collect about ₹437 per point × 30 = ₹13,110",
-    "maxLoss": "The most you can lose: ₹16,890 (563 points × 30)",
+    "credit": "You collect about ₹414 per point × 30 = ₹12,420",
+    "maxLoss": "The most you can lose: ₹17,580 (586 points × 30)",
     "when": "On a climb to 63,900–64,000 where a 15-minute candle fails to close above 64,000. Skip it if a 15-minute candle has already closed above 64,100.",
-    "exit": "Close both legs if a 15-minute candle closes above 64,100 (loss about ₹2,400), or when the spread is worth about ₹250 (profit about ₹5,600)."
+    "exit": "Close both legs if a 15-minute candle closes above 64,100 (loss about ₹2,400), or when the spread is worth about ₹230 (profit about ₹5,500)."
    },
    "why": [
-    "Big traders hold about 26,300 bets that Bank Nifty stays under 64,000, the biggest pile near the price; that line has turned the index back four times.",
-    "Today they also placed about 4,500 bets each way at 64,000, that it won't rise and that it won't fall; they expect it to hover, not break out.",
-    "The floor where big traders have bet it won't fall is 63,000, about 535 points below; the ceiling is 64,000, about 465 above, so there is no clear lean.",
-    "Even if Bank Nifty climbs above 64,000, this trade only starts losing above 64,437; that gives a bounce room to be wrong."
+    "Bank Nifty opened 209 points lower at 63,326, but that is still the middle of the 63,000–64,000 band big traders have been defending.",
+    "Big traders hold about 26,300 bets that it stays under 64,000, the biggest pile near the price; that line has turned the index back four times.",
+    "They have bet about 19,600 contracts that it won't fall below 63,000, about 326 points below the open; that is the floor.",
+    "Even if Bank Nifty climbs above 64,000, this trade only starts losing above 64,414; that gives a bounce room to be wrong."
    ],
-   "risk": "The most you can lose is ₹16,890 per lot if Bank Nifty closes above 65,000 on 29 Dec; exit earlier at 64,100 for about ₹2,400. Paper-trade two weeks before real money.",
+   "risk": "The most you can lose is ₹17,580 per lot if Bank Nifty closes above 65,000 on 29 Dec; exit earlier at 64,100 for about ₹2,400. Paper-trade two weeks before real money.",
    "glossary": [
     [
      "PE / put option",
