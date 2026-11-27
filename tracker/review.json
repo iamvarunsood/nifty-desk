@@ -5,5 +5,12 @@
   "Stops 60-100 points away were hit by normal noise while direction was right. Stops and range edges are sized from dayMove (min_stop, min_half_range in desk_brief.py), never tighter.",
   "'Right on the box only' flattered the record. A call with a lean is right only if the lean paid."
  ],
- "days": []
+ "days": [
+  {
+   "date": "27-Nov-2026",
+   "nifty": "Four scored: 54 wrong, 55 wrong, 56 right, 57 right. 54 leaned up off Thursday's close while the 5-day trend was flat and Friday opened 45 lower, so the lean never paid. 55 put its range edges 106 and 144 points from spot, half the 202-point minimum, and the floor broke within the hour.",
+   "bank": "Two scored: 31 right, 32 wrong. 32 called a no-lean range with the trend down on the day and the week, and its floor sat 396 points from spot, under the 497-point minimum; the 63,000 floor gave way by 42 points.",
+   "change": "Monday's Nifty call is a no-lean range with edges 257 and 293 points from spot; Bank Nifty leans down with the trend and gives no buy zone."
+  }
+ ]
 }
